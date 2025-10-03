@@ -2,24 +2,36 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Registration;
-use App\Livewire\Login;
+use App\Http\Controllers\AuthController;
+use App\Livewire\Auth\VerifyOtpForm;
+use App\Livewire\Auth\RegisterForm;
+use App\Livewire\Dashboard\Home;
+use App\Livewire\Auth\LoginForm;
 
-Route::get('/', function () {
-    return view('livewire/login');
+
+
+
+
+
+
+ROute::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+// registration routes
+Route::get('/register', RegisterForm::class)->name('register');
+
+
+// OTP verification route
+Route::get('/otp/verify/{phone}', VerifyOtpForm::class)->name('otp.verify');
+
+// Login route
+Route::get('/login', LoginForm::class)->name('login');
+
+
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', Home::class)->name('dashboard');
 });
-
-// Auth and First time OTP Routes
-Route::prefix('auth')->group(function () {
-    Route::get('/registration', [AuthController::class, 'OTP'])->name('auth.otp');
-    Route::get('/verifyotp', [SMSController::class, 'verify'])->name('auth.verifyotp');
-    Route::get('/login', [AuthController::class, 'register'])->name('auth.registration');
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
-    Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
-});
-
-
-
-Route::get('/register', Registration::class)->name('register.form');
-
-
-Route::get('/login', Login::class)->name('login.form');

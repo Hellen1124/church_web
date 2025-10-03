@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'fakesms' => [
+        'url'     => env('FAKESMS_URL', 'http://localhost:4000/send'),
+        'key'     => env('FAKESMS_API_KEY', null),
+        'timeout' => env('FAKESMS_TIMEOUT', 5),
+    ],
+
 ];
