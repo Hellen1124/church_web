@@ -3,6 +3,7 @@
 namespace App\Livewire\Auth;
 
 use App\Services\OtpService;
+use App\Models\User;
 use Livewire\Component;
 use WireUi\Traits\WireUiActions;
 use Illuminate\Support\Facades\Auth;

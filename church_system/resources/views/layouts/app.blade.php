@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'MyApp' }}</title>
+    <title>{{ $title ?? config('app.name', 'MyApp') }}</title>
 
     {{-- Vite --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -13,19 +13,31 @@
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 </head>
-<body class="antialiased bg-gray-50 min-h-screen">
-    <main class="container mx-auto p-6">
-        {{ $slot ?? '' }}
+<body class="bg-light min-vh-100 d-flex flex-column">
+
+    
+
+    {{-- ✅ Main Content Area --}}
+    <main class="flex-grow-1 py-4">
+        <div class="container">
+            {{ $slot ?? '' }}
+        </div>
     </main>
 
-    {{-- Livewire + WireUI --}}
+    {{-- ✅ Footer --}}
+    <footer class="bg-white border-top py-3 text-center text-muted small">
+        &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+    </footer>
+
+    {{-- ✅ Livewire + WireUI --}}
     @livewireScripts
     @wireUiScripts
 
-    {{-- Lucide Icons --}}
+    {{-- ✅ Lucide Icons --}}
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -33,7 +45,7 @@
         });
     </script>
 
-    {{-- Redirect handler --}}
+    {{-- ✅ Redirect handler --}}
     <script>
         window.addEventListener('redirect', function (event) {
             if (! event.detail) return;
@@ -52,11 +64,12 @@
         });
     </script>
 
-    {{-- Notifications --}}
+    {{-- ✅ Notifications --}}
     <x-notifications />
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 

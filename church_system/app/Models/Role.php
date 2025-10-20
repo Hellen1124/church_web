@@ -20,8 +20,13 @@ class Role extends SpatieRole
     protected $with = ['permissions'];
 
 
-    protected $fillable = [
-        'user_id', 'tenant_id', 'title', 'description',
+     protected $fillable = [
+        'user_id',
+        'tenant_id',
+        'title',
+        'description',
+        'name',
+        'guard_name',
     ];
 
     /**
@@ -37,12 +42,15 @@ class Role extends SpatieRole
         return $this->belongsTo(User::class);
     }
 
-    public function tenant()
-    {
-        return $this->belongsTo(Tenant::class);
-    }
+    
     public function permissions(): BelongsToMany
-    {
-        return $this->belongsToMany(Permission::class);
-    }
+{
+    return $this->belongsToMany(
+        Permission::class,
+        'role_has_permissions',
+        'role_id',
+        'permission_id'
+    );
+}
+
 }

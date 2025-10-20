@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tenant extends AbstractModel
 {
+    use HasFactory, SoftDeletes, BelongsToTenant;
    
     protected $fillable = [
         'user_id',
@@ -24,7 +26,9 @@ class Tenant extends AbstractModel
         'vat_pin',
         'kra_pin',
         'domain',
-        'is_active'
+        'is_active',
+        'created_by',
+        'updated_by',
     ];
 
     protected $appends = ['logo'];

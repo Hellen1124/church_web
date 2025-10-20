@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Models\Permission as SpatiePermission;
+use App\Traits\BelongToTenant;
 
 class Permission extends SpatiePermission
 {
@@ -26,10 +27,6 @@ class Permission extends SpatiePermission
         return $this->belongsTo(User::class);
     }
 
-    public function tenant()
-    {
-        return $this->belongsTo(Tenant::class);
-    }
 
     public function roles(): BelongsToMany
     {

@@ -7,12 +7,17 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
     use HasApiTokens;
+    use HasRoles;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -20,14 +25,16 @@ class User extends Authenticatable
      * @var list<string>
      */
    protected $fillable = [
-        'tenant_id',      
+        'tenant_id', 
+        'member_id',     
         'first_name',
         'last_name',
         'email',
         'phone',
         'password',
         'otp_token',
-       
+       'created_by',
+       'updated_by',
     ];
 
    
@@ -56,4 +63,27 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function member()
+{
+    return $this->belongsTo(Member::class);
+
+}
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function getPermissionsAttribute()
+    {
+        return $this->roles->load('permissions')->pluck('permissions')->flatten()->pluck('name');
+    }
+
+    public function getAuthIdentifierName()
+{
+    return 'phone';
+}
+
+
 }

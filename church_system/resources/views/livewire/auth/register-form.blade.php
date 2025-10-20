@@ -1,141 +1,92 @@
-<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-    
-    <div class="col-md-8 col-lg-6 col-xl-5">
-        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-            
-            <!-- Header -->
-            <div class="bg-primary text-white text-center py-4">
-                <img src="#" alt="Jobwira" width="80" class="mb-2">
-                <h4 class="fw-bold mb-0">Create Your Account</h4>
-                <small class="text-white-50">Join Jobwira today</small>
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-10">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-3xl p-6">
+        <div class="text-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c.621 0 1.127-.506 1.127-1.127V8.127A1.127 1.127 0 0012 7a1.127 1.127 0 00-1.127 1.127v1.746C10.873 10.494 11.379 11 12 11z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657A8 8 0 116.343 5.343M12 11v5m0 0h.01M12 16h.01" />
+            </svg>
+            <h2 class="text-2xl font-bold text-gray-800">Create Your Account</h2>
+            <p class="text-gray-500 text-sm mt-1">Join us and get started today</p>
+        </div>
+
+        <form wire:submit.prevent="register" class="space-y-4">
+            @csrf
+
+            <!-- First Name -->
+            <div>
+                <label for="first_name" class="block text-sm font-semibold text-gray-700">First Name</label>
+                <input type="text" wire:model.defer="first_name" id="first_name"
+                    class="mt-1 w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 outline-none"
+                    placeholder="John" required>
+                @error('first_name') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
 
-            <!-- Body -->
-            <div class="card-body p-4">
-                <form wire:submit.prevent="register">
-                    @csrf
-
-                    <!-- First & Last Name -->
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="fname" class="form-label">First Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0">
-                                    <i class="fas fa-user text-muted"></i>
-                                </span>
-                                <input type="text" wire:model.defer="first_name"
-                                       class="form-control border-start-0 @error('first_name') is-invalid @enderror"
-                                       id="fname" placeholder="John" required>
-                            </div>
-                            @error('first_name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="lname" class="form-label">Last Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0">
-                                    <i class="fas fa-user text-muted"></i>
-                                </span>
-                                <input type="text" wire:model.defer="last_name"
-                                       class="form-control border-start-0 @error('last_name') is-invalid @enderror"
-                                       id="lname" placeholder="Doe" required>
-                            </div>
-                            @error('last_name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <!-- Email -->
-                    <div class="mt-3">
-                        <label for="email" class="form-label">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0">
-                                <i class="fas fa-envelope text-muted"></i>
-                            </span>
-                            <input type="email" wire:model.defer="email"
-                                   class="form-control border-start-0 @error('email') is-invalid @enderror"
-                                   id="email" placeholder="you@example.com" required>
-                        </div>
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Phone -->
-                    <div class="mt-3">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0">
-                                <i class="fas fa-phone text-muted"></i>
-                            </span>
-                            <input type="tel" wire:model.defer="phone"
-                                   class="form-control border-start-0 @error('phone') is-invalid @enderror"
-                                   id="phone" placeholder="+254712345678" required>
-                        </div>
-                        @error('phone')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Password -->
-                    <div class="mt-3">
-                        <label for="password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0">
-                                <i class="fas fa-lock text-muted"></i>
-                            </span>
-                            <input type="password" wire:model.defer="password"
-                                   class="form-control border-start-0 @error('password') is-invalid @enderror"
-                                   id="password" placeholder="Create a password" required>
-                        </div>
-                        @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div class="mt-3">
-                        <label for="password_confirmation" class="form-label">Confirm Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0">
-                                <i class="fas fa-lock text-muted"></i>
-                            </span>
-                            <input type="password" wire:model.defer="password_confirmation"
-                                   class="form-control border-start-0 @error('password_confirmation') is-invalid @enderror"
-                                   id="password_confirmation" placeholder="Confirm your password" required>
-                        </div>
-                        @error('password_confirmation')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Button -->
-                    <div class="d-grid mt-4">
-                        <button class="btn btn-warning btn-lg fw-semibold shadow-sm" type="submit">
-                            <i class="fas fa-user-plus me-2"></i> Register
-                        </button>
-                    </div>
-
-                    <!-- Terms -->
-                    <p class="text-center small text-muted mt-3">
-                        By registering, you agree to Kaziwira
-                        <a href="#" class="text-decoration-none">Terms</a> and
-                        <a href="#" class="text-decoration-none">Privacy</a>.
-                    </p>
-                </form>
+            <!-- Last Name -->
+            <div>
+                <label for="last_name" class="block text-sm font-semibold text-gray-700">Last Name</label>
+                <input type="text" wire:model.defer="last_name" id="last_name"
+                    class="mt-1 w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 outline-none"
+                    placeholder="Doe" required>
+                @error('last_name') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
 
-            <!-- Footer -->
-            <div class="card-footer bg-light text-center py-3">
-                <span class="text-muted">Already a member?</span>
-                <a href="{{ url('/login') }}" class="fw-semibold text-primary text-decoration-none ms-1">Login now</a>
+            <!-- Email -->
+            <div>
+                <label for="email" class="block text-sm font-semibold text-gray-700">Email Address</label>
+                <input type="email" wire:model.defer="email" id="email"
+                    class="mt-1 w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 outline-none"
+                    placeholder="you@example.com" required>
+                @error('email') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
+
+            <!-- Phone -->
+            <div>
+                <label for="phone" class="block text-sm font-semibold text-gray-700">Phone Number</label>
+                <input type="tel" wire:model.defer="phone" id="phone"
+                    class="mt-1 w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 outline-none"
+                    placeholder="+254712345678" required>
+                @error('phone') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label for="password" class="block text-sm font-semibold text-gray-700">Password</label>
+                <input type="password" wire:model.defer="password" id="password"
+                    class="mt-1 w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 outline-none"
+                    placeholder="Create a password" required>
+                @error('password') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+                <label for="password_confirmation" class="block text-sm font-semibold text-gray-700">Confirm Password</label>
+                <input type="password" wire:model.defer="password_confirmation" id="password_confirmation"
+                    class="mt-1 w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 outline-none"
+                    placeholder="Confirm your password" required>
+                @error('password_confirmation') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <!-- Register Button -->
+            <div class="pt-3">
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition duration-200">
+                    <svg wire:loading class="w-5 h-5 mr-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                    Register
+                </button>
+            </div>
+        </form>
+
+        <!-- Footer -->
+        <div class="text-center mt-6 text-sm text-gray-600">
+            Already have an account?
+            <a href="{{ route('login') }}" class="text-blue-600 font-semibold hover:underline">Login</a>
         </div>
     </div>
 </div>
+
 
 
 
