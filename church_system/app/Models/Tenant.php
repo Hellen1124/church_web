@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Tenant extends AbstractModel
+class Tenant extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;
    

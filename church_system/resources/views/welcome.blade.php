@@ -111,7 +111,7 @@
         </div>
 
         <div class="order-1 md:order-2">
-          <!-- HERO VISUAL: replace with screenshot or short looping MP4/webm -->
+         <!-- short looping MP4/webm  -->
           <div class="rounded-2xl shadow-xl overflow-hidden bg-white">
             
             <video src="{{ asset('video/hero-loop.mp4') }}" autoplay muted loop playsinline class="w-full"></video>

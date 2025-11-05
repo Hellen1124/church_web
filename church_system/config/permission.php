@@ -190,4 +190,10 @@ return [
 
         'store' => 'default',
     ],
+
+    'guards' => [
+    'web' => [
+        'provider' => 'users',
+    ],
+],
 ];

@@ -22,14 +22,14 @@ class RoleSeeder extends Seeder
                 'tenant_id'  => null, // Global role
                 'user_id'    => null, // Created by system
             ],
-            // [
-            //     'name'        => 'church-admin',
-            //     'guard_name'  => 'web',
-            //     'title'       => 'Church Administrator ',
-            //     'description' => 'Manage all church oparations.',
-            //     'tenant_id'  => null,
-            //     'user_id'    => null,
-            // ],
+            [
+                'name'        => 'church-admin',
+                'guard_name'  => 'web',
+                'title'       => 'Church Administrator ',
+                'description' => 'Manage all church oparations.',
+                'tenant_id'  => null,
+                'user_id'    => null,
+            ],
            
             
         ];
