@@ -15,8 +15,12 @@
                 placeholder="Search churches..." 
                 class="rounded-lg border-gray-300 focus:ring-amber-500 focus:border-amber-500 text-sm px-4 py-2"
             />
-
-            {{-- View Toggle --}}
+         <a href="{{ route('system-admin.church.create') }}" 
+                class="inline-flex items-center px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg shadow-sm transition whitespace-nowrap">
+                <i class="fa-solid fa-plus mr-2"></i>
+                New Church
+            </a>
+          
            {{-- View Toggle --}}
 <div class="flex items-center bg-white border rounded-lg overflow-hidden">
     <button 

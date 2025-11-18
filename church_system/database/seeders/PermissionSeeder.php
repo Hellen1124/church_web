@@ -20,10 +20,25 @@ class PermissionSeeder extends Seeder
 
             // 🗂️ Define system-level modules
             $modules = [
-                'users' => ['view', 'create', 'update', 'delete'],
-                'roles' => ['view', 'create', 'update', 'delete'],
-                'permissions' => ['view', 'create', 'update', 'delete'],
+                // SYSTEM-LEVEL
+                'users' => ['view', 'create', 'update', 'delete','manage'],
+                'roles' => ['view', 'create', 'update', 'delete', 'assign','manage'],
+                'permissions' => ['view', 'create', 'update', 'delete', 'assign', 'manage'],
                 'tenants' => ['view', 'create', 'update', 'delete'],
+                'dashboard' => ['view main', 'view tenant'],
+                'profile' => ['view', 'update', 'change password','manage'],
+                'settings' => ['view', 'update','manage'],
+
+                // CHURCH-LEVEL (Church Admin)
+                'church' => ['view', 'edit', 'manage'],
+                'members' => ['view', 'create', 'update', 'delete', 'manage','assign roles'],
+                'events' => ['view', 'create', 'update', 'delete', 'manage'],
+                'announcements' => ['view', 'create', 'update', 'delete'],
+                'reports' => ['view', 'generate'],
+                'finance' => ['view', 'record', 'manage'],
+                'profiles' => ['view', 'update'],
+                'settings' => ['view', 'update'],
+
             ];
 
             foreach ($modules as $module => $actions) {

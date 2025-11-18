@@ -6,13 +6,12 @@
 
     <title>{{ $title ?? config('app.name', 'MyApp') }}</title>
 
-    {{-- ✅ WireUI Scripts must come first --}}
-    @wireUiScripts
+    {{-- ❌ REMOVED: @wireUiScripts (Should be at the end of the body) --}}
 
-    {{-- ✅ Livewire Styles --}}
+    {{-- ✅ Livewire Styles (Must be in head) --}}
     @livewireStyles
 
-    {{-- ✅ Vite Assets --}}
+    {{-- ✅ Vite Assets (Must be in head, loads CSS and app.js/Alpine) --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     {{-- ✅ Bootstrap & Icons --}}
@@ -20,7 +19,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-light min-vh-100 d-flex flex-column">
-
     
 
     {{-- ✅ Main Content Area --}}
@@ -35,9 +33,23 @@
         &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
     </footer>
 
-    {{-- ✅ Livewire + WireUI --}}
-    @livewireScripts
+    {{-- ❌ REMOVED: The two @livewireScripts and the one @wireUiScripts from the middle of the body --}}
+    {{-- ❌ REMOVED: The @livewireScripts at the bottom --}}
+
+    {{-- ✅ Bootstrap 5 JS (Load first) --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    {{--
+        ✅ WIREUI SCRIPTS (The ONLY required Livewire/Alpine boot script)
+        WireUI includes and boots both Livewire and Alpine correctly.
+        It MUST be placed AFTER Bootstrap and BEFORE any other custom script.
+    --}}
     @wireUiScripts
+
+    {{-- ✅ Notifications & Dialog Components (Must be before custom scripts) --}}
+  
+
+    
 
     {{-- ✅ Lucide Icons --}}
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -47,7 +59,7 @@
         });
     </script>
 
-    {{-- ✅ Redirect handler --}}
+    {{-- ✅ Redirect handler (Custom scripts can go here) --}}
     <script>
         window.addEventListener('redirect', function (event) {
             if (! event.detail) return;
@@ -57,7 +69,8 @@
             }
         });
 
-        document.addEventListener('livewire:load', function () {
+        // Use Livewire.hook for v3 compatibility, though Livewire.on may still work
+        document.addEventListener('livewire:initialized', function () { 
             if (window.Livewire) {
                 Livewire.on('redirect', function(url) {
                     if (url) window.location.href = url;
@@ -65,16 +78,6 @@
             }
         });
     </script>
-
-   {{-- ✅ Livewire Scripts (must come after all content) --}}
-    @livewireScripts
-
-    {{-- ✅ WireUI Notifications & Dialog Components --}}
-    <x-notifications />
-    <x-dialog />
-
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\TracksUserActions;
 
 
 class User extends Authenticatable
@@ -18,6 +19,7 @@ class User extends Authenticatable
     use HasApiTokens;
     use HasRoles;
     use SoftDeletes;
+    use TracksUserActions;
 
     /**
      * The attributes that are mass assignable.
@@ -59,28 +61,28 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'email_verified_at' => 'datetime', // USING EMAIL FOR VERIFICATION THOUGH LOGIN IS PHONE.
             'password' => 'hashed',
         ];
     }
 
-    public function member()
+    public function member() // RELATION TO MEMBER
 {
     return $this->belongsTo(Member::class);
 
 }
 
-    public function tenant()
+    public function tenant() // RELATION TO TENANT
     {
         return $this->belongsTo(Tenant::class);
     }
 
-    public function getPermissionsAttribute()
+    public function getPermissionsAttribute() // GET ALL PERMISSIONS OF USER
     {
         return $this->roles->load('permissions')->pluck('permissions')->flatten()->pluck('name');
     }
 
-    public function getAuthIdentifierName()
+    public function getAuthIdentifierName() // USE PHONE FOR AUTHENTICATION
 {
     return 'phone';
 }

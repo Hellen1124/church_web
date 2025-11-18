@@ -6,6 +6,7 @@
     $isAdmin = $user && $user->hasRole('Church Admin');
     $isTreasurer = $role === 'Treasurer';
     $isSecretary = $role === 'Secretary';
+    $isSuperAdmin = $user && $user->hasRole('super-admin');
 @endphp
 
 <aside 
@@ -16,7 +17,7 @@
     :class="open ? 'w-64' : 'w-20'"
 >
     <div class="flex flex-col h-full">
-        {{-- 🌿 Logo / Collapse --}}
+        {{-- Logo / Collapse --}}
         <div class="flex items-center justify-between px-4 py-3 border-b border-amber-100">
             <div class="flex items-center space-x-2">
                 <i class="fa fa-church text-amber-600 text-xl"></i>
@@ -27,7 +28,7 @@
             </button>
         </div>
 
-        {{-- 🌻 Navigation --}}
+        {{-- Navigation --}}
         <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-2 scrollbar-thin scrollbar-thumb-amber-300 scrollbar-track-amber-50">
             <p x-show="open" class="text-xs font-semibold uppercase text-stone-500 mt-2 mb-1 px-2">Core</p>
             @include('partials.sidebar-link', ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'label' => 'Dashboard'])
@@ -38,7 +39,7 @@
 
             @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-calendar-alt', 'label' => 'Events & Programs'])
 
-            {{-- 💰 Finance --}}
+            {{-- Finance --}}
             @if ($isTreasurer || $isAdmin)
                 <p x-show="open" class="text-xs font-semibold uppercase text-stone-500 mt-4 mb-1 px-2 border-t border-amber-100 pt-3">Finance</p>
                 @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-hand-holding-usd', 'label' => 'Offerings & Tithes'])
@@ -46,7 +47,7 @@
                 @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-file-invoice-dollar', 'label' => 'Reports'])
             @endif
 
-            {{-- 🧩 Operations --}}
+            {{-- Operations --}}
             @if ($isAdmin)
                 <p x-show="open" class="text-xs font-semibold uppercase text-stone-500 mt-4 mb-1 px-2 border-t border-amber-100 pt-3">Operations</p>
                 @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-layer-group', 'label' => 'Departments'])
@@ -54,23 +55,77 @@
                 @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-comments', 'label' => 'Messaging'])
             @endif
 
-            {{-- 📘 Documentation --}}
+            {{-- Documentation --}}
             @if ($isSecretary)
                 <p x-show="open" class="text-xs font-semibold uppercase text-stone-500 mt-4 mb-1 px-2 border-t border-amber-100 pt-3">Documentation</p>
                 @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-book-open', 'label' => 'Meeting Minutes'])
                 @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-envelope-open-text', 'label' => 'Letters'])
             @endif
 
-            {{-- 🛠️ System --}}
-            @if($user && $user->hasRole('super-admin'))
-                <p x-show="open" class="text-xs font-semibold uppercase text-stone-500 mt-4 mb-1 px-2 border-t border-amber-100 pt-3">System</p>
-                @include('partials.sidebar-link', ['route' => 'system-admin.church.index', 'icon' => 'fa-building', 'label' => 'Churches'])
-                @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-user-shield', 'label' => 'Users & Roles'])
-                @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-database', 'label' => 'Logs'])
+            {{-- SUPER ADMIN ONLY — GOD MODE ACTIVATED --}}
+            @if($isSuperAdmin)
+                <p x-show="open" class="text-xs font-bold uppercase text-red-700 mt-6 mb-1 px-2 border-t-2 border-red-200 pt-4 
+                    bg-red-50/50 rounded-lg">⚡ SUPER ADMIN ZONE ⚡</p>
+
+                {{-- Users --}}
+                @include('partials.sidebar-link', [
+                    'route' => 'system-admin.users.index',
+                    'icon' => 'fa-users-cog',
+                    'label' => 'Users',
+                    'badge' => 'All Tenants',
+                    'badgeColor' => 'bg-emerald-100 text-emerald-800'
+                ])
+
+                {{-- Roles & Permissions --}}
+                @include('partials.sidebar-link', [
+                    'route' => 'system-admin.rolemanager.index',
+                    'icon' => 'fa-user-shield',
+                    'label' => 'Roles & Permissions',
+                    'badge' => 'Dev Only',
+                    'badgeColor' => 'bg-red-100 text-red-800',
+                    'iconColor' => 'text-red-600',
+                    'hoverBg' => 'hover:bg-red-50'
+                ])
+
+                {{-- Churches / Tenants --}}
+                @include('partials.sidebar-link', [
+                    'route' => 'system-admin.church.index',
+                    'icon' => 'fa-building',
+                    'label' => 'Churches',
+                    'badge' => 'Multi-Tenant',
+                    'badgeColor' => 'bg-amber-100 text-amber-800'
+                ])
+
+                {{-- Action Center --}}
+                @include('partials.sidebar-link', [
+                    'route' => 'super-admin.action-center',
+                    'icon' => 'fa-bolt',
+                    'label' => 'Action Center',
+                    'badge' => 'Backup • Migrate',
+                    'badgeColor' => 'bg-orange-100 text-orange-800'
+                ])
+
+                {{-- Developer Tools --}}
+                <div x-data="{ devOpen: false }">
+                    <button @click="devOpen = !devOpen"
+                            class="flex items-center w-full px-3 py-2.5 text-sm font-medium text-gray-700 
+                                   hover:bg-amber-100 rounded-lg transition-all duration-200 group">
+                        <i class="fa fa-terminal w-5 text-purple-600"></i>
+                        <span x-show="open" class="ml-3">Developer Tools</span>
+                        <i x-show="open" class="ml-auto fa" :class="devOpen ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                    </button>
+
+                    <div x-show="devOpen" x-transition x-cloak class="ml-8 space-y-1">
+                        @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-code', 'label' => 'Artisan Console'])
+                        @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-file-code', 'label' => 'Logs Viewer'])
+                        @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-broom', 'label' => 'Cache Clear'])
+                        @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-shield-alt', 'label' => 'Gate Bypass'])
+                    </div>
+                </div>
             @endif
         </nav>
 
-        {{-- ⚙️ Account (Sticky Logout) --}}
+        {{-- Account (Sticky Logout) --}}
         <div class="sticky bottom-0 bg-gradient-to-t from-stone-100 to-amber-50 border-t border-amber-100 px-3 py-4">
             <p x-show="open" class="text-xs font-semibold uppercase text-stone-500 mb-2 px-2">Account</p>
             @include('partials.sidebar-link', ['route' => '#', 'icon' => 'fa-user-circle', 'label' => 'Profile Settings'])
@@ -85,12 +140,17 @@
                     <span x-show="open">Logout</span>
                 </button>
             </form>
+
+            @if($isSuperAdmin)
+                <div x-show="open" class="mt-3 px-2 text-xs text-red-600 font-bold animate-pulse">
+                    ROOT ACCESS ACTIVE
+                </div>
+            @endif
         </div>
     </div>
 </aside>
 
 <style>
-    /* Custom Scrollbar Styling */
     .scrollbar-thin {
         scrollbar-width: thin;
         scrollbar-color: #f59e0b #fef3c7;

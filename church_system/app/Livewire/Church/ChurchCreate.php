@@ -174,7 +174,7 @@ class ChurchCreate extends Component
 
             Log::info('STEP 6: Assign role');
             $role = Role::firstOrCreate(['name' => 'Church Admin']);
-            $user->assignRole($role);
+            $user->assignRole('Church Admin');
             Log::info('STEP 6 ✅ Role assigned');
 
             Log::info('STEP 7: Create member');

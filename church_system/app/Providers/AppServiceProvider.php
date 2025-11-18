@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Collection;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,8 +20,11 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+  public function boot(): void
     {
-        // Must be empty or only contain standard Laravel code
+        Relation::morphMap([
+            'role' => \Spatie\Permission\Models\Role::class,
+            'permission' => \Spatie\Permission\Models\Permission::class,
+        ]);
     }
 }

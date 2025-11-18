@@ -48,6 +48,10 @@ class VerifyOtpForm extends Component
 
                 Auth::login($user);
 
+                $user->forcefill([
+                    'last_login_at' => now(),
+                ])->save();
+
                 $this->notification()->success(
                     title: 'Verified',
                     description: 'Your phone number has been verified. Welcome to your dashboard!'

@@ -78,6 +78,11 @@ class LoginForm extends Component
 
         // Attempt authentication
         if (Auth::attempt(['phone' => $localPhone, 'password' => $this->password])) {
+
+             $user->forcefill([
+                'last_login_at' =>now(),
+             ])->save();
+
             Log::info('Auth successful', ['user_id' => Auth::id(), 'phone' => $localPhone]);
 
             $this->notification()->success(

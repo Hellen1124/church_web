@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\TracksUserActions;
 
 class Tenant extends Model
 {
-    use HasFactory, SoftDeletes, BelongsToTenant;
-   
+    use HasFactory, SoftDeletes, BelongsToTenant, TracksUserActions;
+
     protected $fillable = [
         'user_id',
         'church_name',
@@ -33,10 +34,10 @@ class Tenant extends Model
 
     protected $appends = ['logo'];
 
-      /**
-     * Get the user that owns the Tenant
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+  
+
+    /**
+     * 👤 The owner of this tenant.
      */
     public function user(): BelongsTo
     {
@@ -44,23 +45,38 @@ class Tenant extends Model
     }
 
     /**
-     * Get all of the users for the Tenant
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * 👥 All users belonging to this tenant.
      */
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
+    /**
+     * 🧍 Creator (user who created this tenant)
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * 🧍‍♂️ Updater (user who last updated this tenant)
+     */
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * 🖼️ Compute logo URL dynamically
+     */
     public function getLogoAttribute()
     {
         if ($this->logo_image) {
-            return "https://" . $this->domain . "/storage/" . Str::slug($this->name) . "/logo/{$this->logo_image}";
+            return "https://" . $this->domain . "/storage/" . Str::slug($this->church_name) . "/logo/{$this->logo_image}";
         }
 
         return config('app.url') . "/assets/images/Afrinet.png";
     }
-
-
 }

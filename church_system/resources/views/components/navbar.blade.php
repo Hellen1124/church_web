@@ -56,7 +56,7 @@
                     <div x-show="open" x-transition
                         class="absolute right-0 mt-2 w-52 bg-white border border-amber-100 rounded-xl shadow-lg ring-1 ring-black/5 origin-top-right z-50">
                         <div class="py-1">
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-stone-700 hover:bg-amber-50 hover:text-amber-700 transition">
+                            <a href="{{ route('system-admin.profile.show') }}" class="flex items-center px-4 py-2 text-sm text-stone-700 hover:bg-amber-50 hover:text-amber-700 transition">
                                 <i class="fa fa-user-circle me-3 text-amber-600"></i> Profile
                             </a>
                             <a href="#" class="flex items-center px-4 py-2 text-sm text-stone-700 hover:bg-amber-50 hover:text-amber-700 transition">

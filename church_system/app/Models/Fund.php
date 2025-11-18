@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\TracksUserActions;
 
 class Fund extends Model
 {
+
+    use TracksUserActions;
+    
     protected $fillable = [
         'tenant_id',
         'name',

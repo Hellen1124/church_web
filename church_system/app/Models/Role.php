@@ -1,56 +1,60 @@
 <?php
 
+
+
 namespace App\Models;
 
-use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Permission\Models\Role as SpatieRole;
+use Spatie\Permission\Models\Role as SpatieRole; 
 use App\Traits\BelongsToTenant;
+use App\Traits\TracksUserActions;
 
 class Role extends SpatieRole
 {
-    use HasFactory;
-    use SoftDeletes;
-    use BelongsToTenant;
+    // Essential Traits
+    use HasFactory, SoftDeletes;
+    
+    // Custom Traits
+    use BelongsToTenant, TracksUserActions;
 
-    protected $with = ['permissions'];
+    // Use Spatie's internal properties for permissions loading
+    protected $with = ['permissions']; 
 
-
-     protected $fillable = [
-        'user_id',
-        'tenant_id',
-        'title',
-        'description',
-        'name',
-        'guard_name',
+    // Define all custom and inherited fillable fields
+    protected $fillable = [
+        'user_id',          // For the creator/tracker
+        'tenant_id',        // For the BelongsToTenant trait
+        'title',            // Your custom field
+        'description',      // Your custom field
+        'name',             // Spatie field
+        'guard_name',       // Spatie field
     ];
 
     /**
-     * @return BelongsToMany
+     * Relationship to the User who created this role (using user_id FK).
+     * This method name is safe and does not conflict with Spatie.
      */
-    public function users(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class);
-    }
-
-    public function user(): BelongsTo //i have used this to fetch the user who created the role
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
+    
+    /**
+     * The permissions relationship (overridden to ensure custom table name if needed).
+     * This is required because Spatie's base model uses different foreign keys/tables.
+     */
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Permission::class,
+            'role_has_permissions', // Ensure this matches your config/database
+            'role_id',
+            'permission_id'
+        );
+    }
 
     
-    public function permissions(): BelongsToMany
-{
-    return $this->belongsToMany(
-        Permission::class,
-        'role_has_permissions',
-        'role_id',
-        'permission_id'
-    );
-}
-
 }

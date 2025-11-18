@@ -42,7 +42,7 @@ class SuperAdminSeeder extends Seeder
             );
 
             // ✅ Assign the role to the super admin
-            $admin->assignRole($role);
+           $admin->assignRole('super-admin');
 
             // ✅ Clear permission cache again
             app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();

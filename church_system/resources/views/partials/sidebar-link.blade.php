@@ -1,7 +1,11 @@
 @php
-    $isActive = $route !== '#' && request()->routeIs($route); 
-    $linkHref = $route === '#' ? '#' : route($route);
+    use Illuminate\Support\Facades\Route;
+
+    $isActive = $route !== '#' && request()->routeIs($route);
+    $linkHref = Route::has($route) ? route($route) : '#';
 @endphp
+
+
 
 <a href="{{ $linkHref }}"
    class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150
@@ -14,4 +18,5 @@
         {{ $isActive ? 'text-amber-700' : 'text-amber-600 group-hover:text-amber-700' }}"></i>
     <span>{{ $label }}</span>
 </a>
+
 
