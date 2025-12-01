@@ -79,4 +79,19 @@ class Tenant extends Model
 
         return config('app.url') . "/assets/images/Afrinet.png";
     }
+
+    public function members()
+{
+    return $this->hasMany(\App\Models\Member::class, 'tenant_id');
+}
+
+public function offerings()
+    {
+        return $this->hasMany(\App\Models\Offering::class, 'tenant_id');
+    }
+
+    public function events()
+    {
+        return $this->hasMany(\App\Models\Event::class, 'tenant_id');
+    }
 }

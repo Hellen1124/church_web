@@ -6,6 +6,8 @@ use Livewire\Component;
 use WireUi\Traits\WireUiActions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
 class LoginForm extends Component
@@ -37,69 +39,77 @@ class LoginForm extends Component
         return $phone;
     }
 
-    public function login()
-    {
-        Log::info('Login attempt', ['input_phone' => $this->phone]);
+     public function login()
+{
+    Log::info('Login attempt started', ['input_phone' => $this->phone]);
 
-        // Normalize the phone number to local format
-        $localPhone = $this->normalizePhone($this->phone);
+    // 1. Normalize phone number
+    $localPhone = $this->normalizePhone($this->phone);
+    $intlPhone  = '+254' . substr($localPhone, -9); // Safe: works even if starts with 0 or 7
 
-        // Generate international format only for validation
-        $intlPhone = '+254' . substr($localPhone, 1);
+    // 2. Validate form + Kenyan phone format
+    try {
+        $this->validate();
 
-        try {
-            $this->validate();
-
-            // Validate the phone number format using intl form (phone:KE)
-            if (!app('validator')->make(['phone' => $intlPhone], ['phone' => 'phone:KE'])->passes()) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
-                    'phone' => ['Invalid Kenyan phone number format.'],
-                ]);
-            }
-
-            Log::info('Validation passed', ['normalized_phone' => $localPhone]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed', ['errors' => $e->errors()]);
-            throw $e;
+        if (!app('validator')->make(['phone' => $intlPhone], ['phone' => 'phone:KE'])->passes()) {
+            throw ValidationException::withMessages([
+                'phone' => 'Please enter a valid Kenyan phone number (e.g. 0712345678).',
+            ]);
         }
+    } catch (ValidationException $e) {
+        Log::error('Login validation failed', ['errors' => $e->errors()]);
+        throw $e;
+    }
 
-        // Check if the user exists
-        $user = \App\Models\User::where('phone', $localPhone)->first();
-        if (!$user) {
-            Log::warning('User not found', ['phone' => $localPhone]);
+    // 3. Find user by normalized local phone
+    $user = User::where('phone', $localPhone)->first();
 
-            $this->notification()->error(
-                title: 'Login Failed',
-                description: 'No account found with this phone number.'
-            );
-
-            return;
-        }
-
-        // Attempt authentication
-        if (Auth::attempt(['phone' => $localPhone, 'password' => $this->password])) {
-
-             $user->forcefill([
-                'last_login_at' =>now(),
-             ])->save();
-
-            Log::info('Auth successful', ['user_id' => Auth::id(), 'phone' => $localPhone]);
-
-            $this->notification()->success(
-                title: 'Welcome Back!',
-                description: 'You have successfully logged in.'
-            );
-
-            return redirect()->route('dashboard');
-        }
-
-        Log::warning('Auth failed', ['phone' => $localPhone]);
+    if (!$user) {
+        Log::warning('Login failed – user not found', ['phone' => $localPhone]);
 
         $this->notification()->error(
             title: 'Login Failed',
-            description: 'Invalid phone number or password. Please try again.'
+            description: 'No account found with this phone number.'
         );
+        return;
     }
+
+    // 4. Attempt login
+    if (!Auth::attempt(['phone' => $localPhone, 'password' => $this->password], $this->remember ?? false)) {
+        Log::warning('Login failed – invalid password', ['user_id' => $user->id]);
+
+        RateLimiter::hit($this->throttleKey()); // Optional: if you're throttling
+
+        $this->notification()->error(
+            title: 'Login Failed',
+            description: 'Incorrect password. Please try again.'
+        );
+        return;
+    }
+
+    // SUCCESS: User is authenticated
+    $user->forceFill([
+        'last_login_at' => now(),
+        
+    ])->save();
+
+    Log::info('Login successful', [
+        'user_id'    => $user->id,
+        'phone'      => $localPhone,
+        'church_id'  => $user->church_id,
+        'is_system_admin' => is_null($user->church_id),
+    ]);
+
+    $this->notification()->success(
+        title: 'Welcome back!',
+        description: 'You have successfully logged in.'
+    );
+
+    // MULTI-TENANCY REDIRECT – Professional & Final
+    $route = is_null($user->tenant_id) ? 'admin.dashboard' : 'church.dashboard';
+
+    return redirect()->route($route);
+}
 
     public function forgotPassword()
     {

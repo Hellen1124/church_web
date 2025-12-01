@@ -11,10 +11,10 @@
         "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6",
-        "mallardduck/blade-lucide-icons": "^1.23",
+        "mallardduck/blade-lucide-icons": "^1.24",
         "propaganistas/laravel-phone": "^6.0",
         "spatie/laravel-permission": "^6.21",
-        "wireui/wireui": "2.4"
+        "wireui/wireui": "^2.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -7,14 +7,16 @@
         </div>
     @endif
 
-    {{-- 1. Profile Photo --}}
+    {{-- 1. Profile Photo Section --}}
     <div class="flex items-center space-x-6">
         <div class="shrink-0">
             @if ($new_photo)
+                {{-- New Photo Preview --}}
                 <img class="h-20 w-20 object-cover rounded-full border-2 border-amber-300" src="{{ $new_photo->temporaryUrl() }}" alt="New Photo Preview">
             @else
                 {{-- Uses the user's current photo URL or a fallback --}}
                 <img class="h-20 w-20 object-cover rounded-full border-2 border-amber-300" 
+                     {{-- The profile_photo_url accessor handles the storage path correctly --}}
                      src="{{ $user->profile_photo_url ?? asset('images/avatar.jpg') }}" 
                      alt="{{ $user->first_name ?? $user->name }}">
             @endif
@@ -23,7 +25,7 @@
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Profile Photo</label>
 
-            {{-- Photo Upload Button --}}
+            {{-- Photo Upload Input and Label/Button --}}
             <input type="file" id="photo-upload" wire:model="new_photo" class="hidden">
             <label for="photo-upload" 
                    class="cursor-pointer inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition">
@@ -43,27 +45,40 @@
         </div>
     </div>
 
-    {{-- 2. First Name --}}
-    <div>
-        <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
-        <input id="first_name" type="text" wire:model="first_name" required autofocus
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-amber-500 focus:border-amber-500">
-        @error('first_name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-    </div>
+    {{-- Main Inputs Grid --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-    {{-- 3. Email Address --}}
-    <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-        <input id="email" type="email" wire:model="email" required
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-amber-500 focus:border-amber-500">
-        @error('email') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+        {{-- 2. First Name --}}
+        <div>
+            <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+            <input id="first_name" type="text" wire:model="first_name" required autofocus
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-amber-500 focus:border-amber-500">
+            @error('first_name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+        </div>
+
+        {{-- 3. Email Address --}}
+        <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+            <input id="email" type="email" wire:model="email" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-amber-500 focus:border-amber-500">
+            @error('email') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+        </div>
+        
+        {{-- 4. Phone Number (ADDED BACK) --}}
+        <div class="md:col-span-2">
+            <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+            <input id="phone" type="text" wire:model="phone"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-amber-500 focus:border-amber-500">
+            <p class="mt-1 text-xs text-gray-500">The phone number is optional for the System Admin.</p>
+            @error('phone') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+        </div>
     </div>
     
-    {{-- 4. Role Display (Read-only for Super Admin) --}}
+    {{-- 5. Role Display (Read-only) --}}
     <div>
         <label class="block text-sm font-medium text-gray-700">Current Role</label>
         <p class="mt-1 text-sm font-semibold text-amber-800 bg-amber-200 inline-block px-3 py-1 rounded-full">
-            {{ $user->roles->first()->name ?? 'User' }}
+            {{ $user->roles->first()->name ?? 'System Admin' }}
         </p>
     </div>
 

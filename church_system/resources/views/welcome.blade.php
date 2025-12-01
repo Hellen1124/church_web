@@ -9,6 +9,8 @@
   <meta property="og:title" content="Church Management System — Simplify Ministry & Admin">
   <meta property="og:description" content="All-in-one ChMS to manage members, giving, events and volunteers. Start a free trial.">
   <meta property="og:image" content="{{ asset('images/og-hero.png') }}"> <!-- placeholder -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
   @vite(['resources/css/app.css','resources/js/app.js'])
 
    {{-- Livewire --}}
@@ -36,7 +38,7 @@
 
       <div class="flex items-center gap-3">
         <a href="#book-demo" class="text-sm px-3 py-2 rounded-md hover:bg-gray-100" aria-label="Book a demo">Book a demo</a>
-        <a href="{{ route('register') }}" 
+        <a href="{{ route('system.portal') }}" 
            class="ml-2 inline-flex items-center px-4 py-2 rounded-lg bg-yellow-400 text-blue-900 font-medium shadow-sm hover:bg-yellow-300"
            data-event="cta-hero-click"
            aria-label="Start free trial">
@@ -70,7 +72,7 @@
           </ul>
 
           <div class="mt-8 flex flex-wrap gap-3">
-            <a href="{{ route('register') }}" 
+            <a href="{{ route('system.portal') }}" 
                class="inline-flex items-center px-6 py-3 bg-yellow-400 text-blue-900 font-semibold rounded-lg shadow hover:bg-yellow-300"
                data-event="primary-cta"
                aria-label="Start free trial">
@@ -470,3 +472,4 @@
 </body>
 </html>
 
+   

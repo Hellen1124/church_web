@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b7463d68d470f403ea050aec484e872b",
+    "content-hash": "46aa2f6a4ec3dc8ac31e5c4527721edb",
     "packages": [
         {
             "name": "blade-ui-kit/blade-icons",
@@ -2310,16 +2310,16 @@
         },
         {
             "name": "mallardduck/blade-lucide-icons",
-            "version": "1.23.0",
+            "version": "1.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mallardduck/blade-lucide-icons.git",
-                "reference": "19081819bb527e15eed22f6528b9d059c1a8df8b"
+                "reference": "e41a58f6b683be8733f7dd10a4e97839e60759b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mallardduck/blade-lucide-icons/zipball/19081819bb527e15eed22f6528b9d059c1a8df8b",
-                "reference": "19081819bb527e15eed22f6528b9d059c1a8df8b",
+                "url": "https://api.github.com/repos/mallardduck/blade-lucide-icons/zipball/e41a58f6b683be8733f7dd10a4e97839e60759b4",
+                "reference": "e41a58f6b683be8733f7dd10a4e97839e60759b4",
                 "shasum": ""
             },
             "require": {
@@ -2364,9 +2364,9 @@
             ],
             "support": {
                 "issues": "https://github.com/mallardduck/blade-lucide-icons/issues",
-                "source": "https://github.com/mallardduck/blade-lucide-icons/tree/1.23.0"
+                "source": "https://github.com/mallardduck/blade-lucide-icons/tree/1.24.0"
             },
-            "time": "2024-07-22T15:40:39+00:00"
+            "time": "2025-11-13T04:23:15+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -6605,21 +6605,21 @@
         },
         {
             "name": "wireui/wireui",
-            "version": "v2.4.0",
+            "version": "v2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wireui/wireui.git",
-                "reference": "3268b65ba129f898c4ece35304b53eb77b4e7530"
+                "reference": "e4d966689eb840986281f5237149b2480eacf87c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wireui/wireui/zipball/3268b65ba129f898c4ece35304b53eb77b4e7530",
-                "reference": "3268b65ba129f898c4ece35304b53eb77b4e7530",
+                "url": "https://api.github.com/repos/wireui/wireui/zipball/e4d966689eb840986281f5237149b2480eacf87c",
+                "reference": "e4d966689eb840986281f5237149b2480eacf87c",
                 "shasum": ""
             },
             "require": {
                 "laravel/framework": "^10.0|^11.0|^12.0",
-                "php": "^8.2|^8.3|^8.4",
+                "php": "^8.2|^8.3|^8.4|^8.5",
                 "wireui/heroicons": "^2.8"
             },
             "require-dev": {
@@ -6627,9 +6627,9 @@
                 "livewire/livewire": "^3.6",
                 "orchestra/testbench": "^10.0",
                 "orchestra/testbench-dusk": "^10.0",
-                "pestphp/pest": "^3.0",
-                "pestphp/pest-plugin-laravel": "^3.0",
-                "pestphp/pest-plugin-livewire": "^3.0"
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "pestphp/pest-plugin-livewire": "^4.0"
             },
             "type": "library",
             "extra": {
@@ -6665,9 +6665,9 @@
             ],
             "support": {
                 "issues": "https://github.com/wireui/wireui/issues",
-                "source": "https://github.com/wireui/wireui/tree/v2.4.0"
+                "source": "https://github.com/wireui/wireui/tree/v2.5.1"
             },
-            "time": "2025-03-09T00:05:18+00:00"
+            "time": "2025-11-10T04:46:35+00:00"
         }
     ],
     "packages-dev": [

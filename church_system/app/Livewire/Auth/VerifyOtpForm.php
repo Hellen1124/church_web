@@ -59,7 +59,7 @@ class VerifyOtpForm extends Component
 
                 Log::info('Verification successful', ['phone' => $this->phone]);
 
-                return redirect()->route('dashboard');
+                return redirect()->route('system.portal');
             } else {
                 Log::error('User not found', ['phone' => $this->phone]);
                 $this->notification()->error(

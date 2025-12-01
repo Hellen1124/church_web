@@ -72,7 +72,7 @@ class AuthController extends Controller
     public function logout()
     {
         Session::forget('user_id');
-        return redirect()->route('login.form');
+        return redirect()->route('system.portal');
     }
 }
 

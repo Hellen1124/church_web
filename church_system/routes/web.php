@@ -42,17 +42,17 @@ Route::get('/otp/verify/{phone}', VerifyOtpForm::class)->name('otp.verify');
 Route::get('/login', LoginForm::class)->name('login');
 Route::get('/password/forgot', ForgotPasswordForm::class)->name('sendResetLink');
 
-// 🔐 Authenticated Routes for admins
-// Route::middleware(['auth'])->group(function () {
-//     Route::get('/dashboard', Home::class)->name('dashboard');
-// });
+
+Route::get('/system-portal', function () {
+    return view('Landing');
+})->name('system.portal');
 
 // 🛡️ System Admin Routes (with permission middleware)
 Route::prefix('system-admin')->group(function () {
 
-    Route::middleware('permission:view main dashboard')
+     Route::middleware('permission:view main dashboard')
         ->get('/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard');
+        ->name('admin.dashboard');
         Route::get('/settings', fn() => view('settings'))->name('settings');
 
     Route::middleware('permission:manage users')
@@ -83,8 +83,38 @@ Route::prefix('system-admin')->group(function () {
         Route::get('/profile', [ProfileManagerController::class, 'show'])
             ->name('system-admin.profile.show');
     });
+
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
      
 });
 
+// 🛡️ Tenant Routes (with auth middleware)
+Route::prefix('church-admin')->group(function () {
+    Route::middleware('permission:manage dashboard')
+        ->get('/dashboard', [App\Http\Controllers\ChurchAdmin\DashboardController::class, 'index'])
+        ->name('church.dashboard');
 
+    Route::middleware('permission:view members')
+        ->get('/members', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'index'])
+        ->name('church.members.index'); 
 
+    Route::middleware('permission:create members')
+        ->get('/members/create', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'create'])
+        ->name('church.members.create');
+
+    Route::middleware('permission:view departments')
+        ->get('/departments', [App\Http\Controllers\ChurchAdmin\DepartmentsController::class, 'index'])
+        ->name('church.departments.index');
+
+    Route::middleware('permission:create departments')
+        ->get('/departments/create', [App\Http\Controllers\ChurchAdmin\DepartmentsController::class, 'create'])
+        ->name('church.departments.create');
+
+    Route::middleware('permission:view events')
+        ->get('/event-programmes', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'index'])
+        ->name('church.events.index');
+    
+    Route::middleware('permission:create events')
+        ->get('/event-programmes/create', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'create'])
+        ->name('church.events.create');
+});

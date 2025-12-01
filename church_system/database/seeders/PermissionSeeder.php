@@ -38,6 +38,8 @@ class PermissionSeeder extends Seeder
                 'finance' => ['view', 'record', 'manage'],
                 'profiles' => ['view', 'update'],
                 'settings' => ['view', 'update'],
+                'dashboard' => ['view main', 'view church', 'manage'],
+                'departments' => ['view', 'create', 'update', 'delete', 'manage'],
 
             ];
 

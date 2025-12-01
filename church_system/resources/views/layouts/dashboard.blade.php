@@ -5,23 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ $title ?? 'Admin Dashboard - ' . config('app.name') }}</title>
 
-    {{-- ✅ Livewire Styles (Must be in head) --}}
+    <!-- ✅ Livewire Styles (must be inside <head>) -->
     @livewireStyles
     
-    {{-- ✅ Vite (bundles Alpine, Tailwind CSS, app.js, etc.) --}}
+    <!-- ✅ Vite bundles Alpine, Tailwind CSS, and app.js -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    {{-- ✅ External libraries --}}
+    <!-- (Lucide via WireUI handles icons) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    {{-- ✅ Custom layout styles --}}
+    <!-- ✅ Custom layout styles -->
     <style>
         body {
             background-color: #f9fafb;
             color: #1f2937;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
@@ -70,66 +70,58 @@
 
 <body>
     @auth
-        {{-- Navbar --}}
+        <!-- ✅ Navbar (shows user + tenant info) -->
         @include('components.navbar', [
             'user' => Auth::user(),
             'tenant' => Auth::user()->tenant ?? null,
         ])
 
-        {{-- Sidebar --}}
+        <!-- ✅ Sidebar (role-based navigation) -->
         <div class="sidebar-wrapper">
             @include('components.sidebar', [
                 'role' => Auth::user()->getRoleNames()->first(),
             ])
         </div>
 
-        {{-- Main Content --}}
+        <!-- ✅ Main Content Area -->
         <main>
             <div class="content-wrapper container-fluid">
                 @yield('content')
             </div>
         </main>
 
+        <!-- ✅ Footer -->
         <footer>&copy; {{ date('Y') }} {{ config('app.name') }} — Church Management System</footer>
     @else
-        {{-- Guest (Login/Register) --}}
+        <!-- ✅ Guest layout (Login/Register pages) -->
         <div class="d-flex justify-content-center align-items-center vh-100">
             @yield('content')
         </div>
     @endauth
 
-    {{-- ✅ External Scripts (Bootstrap) --}}
+    <!-- ✅ External Scripts (Bootstrap JS) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    {{-- ✅ WireUI Scripts (boots Livewire + Alpine automatically) --}}
-    @wireUiScripts
+    <!-- ✅ WireUI Scripts (critical)
+         Loads Alpine.js, Livewire, and Lucide rendering automatically -->
+    <wireui:scripts /> 
 
-    {{-- ✅ Notifications & Dialog (only for authenticated users) --}}
+    <!-- ✅ Notifications & Dialog (only for authenticated users) -->
     @auth
         <x-notifications />
         <x-dialog />
     @endauth
 
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        lucide.createIcons();
-    });
-
-    // Re-init after Livewire updates
-    document.addEventListener('livewire:load', () => {
-        lucide.createIcons();
-    });
-</script>
-
-    {{-- ✅ Redirect handler --}}
+    <!-- ✅ Redirect handler (Livewire v3 compatible) -->
     <script>
+        // Browser-level redirect event
         window.addEventListener('redirect', function (event) {
             if (!event.detail) return;
             const url = event.detail.url || null;
             if (url) window.location.href = url;
         });
 
+        // Livewire v3 redirect event
         document.addEventListener('livewire:initialized', function () {
             if (window.Livewire) {
                 Livewire.on('redirect', function (url) {

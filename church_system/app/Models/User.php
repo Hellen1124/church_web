@@ -7,6 +7,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Tenant;
+use App\Models\Member;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\TracksUserActions;
@@ -32,6 +34,7 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'email',
+        'profile_photo_path',
         'phone',
         'password',
         'otp_token',
@@ -63,6 +66,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime', // USING EMAIL FOR VERIFICATION THOUGH LOGIN IS PHONE.
             'password' => 'hashed',
+            'preferences' => 'array',
+            'last_login_at' => 'datetime'
         ];
     }
 
@@ -83,9 +88,17 @@ class User extends Authenticatable
     }
 
     public function getAuthIdentifierName() // USE PHONE FOR AUTHENTICATION
+    {
+        return 'phone';
+    }
+
+public function getProfilePhotoUrlAttribute(): string // ACCESSOR FOR PROFILE PHOTO URL
 {
-    return 'phone';
+    return $this->profile_photo_path
+        ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->profile_photo_path)
+        : asset('images/avatar.jpg');
 }
+
 
 
 }

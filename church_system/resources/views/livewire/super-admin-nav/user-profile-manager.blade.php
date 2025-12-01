@@ -39,17 +39,19 @@
                 {{-- 🚀 This loads the profile form content below --}}
                 <div class="bg-white shadow rounded-xl p-6 border border-gray-100">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4 border-b pb-3">Profile Details</h2>
-                    @livewire('system-admin.update-profile-information-form')
+                    @livewire('super-admin-nav.update-profile-information-form')
                 </div>
             @elseif ($activeTab === 'security')
                 <div class="bg-white shadow rounded-xl p-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Account Security</h2>
                     <p class="text-gray-600">Security content will go here.</p>
+                    @livewire('super-admin-nav.update-password-form')
                 </div>
             @elseif ($activeTab === 'preferences')
                 <div class="bg-white shadow rounded-xl p-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Display & Notifications</h2>
                     <p class="text-gray-600">Preferences content will go here.</p>
+                    @livewire('super-admin-nav.update-preferences-form')
                 </div>
             @endif
 
