@@ -92,11 +92,11 @@ class EventProgrammesCreate extends Component
             session()->flash('success', 'Event created successfully!');
             
             // Redirect to the new event's detail page after creation
-            return $this->redirect(route('events.show', $event->slug), navigate: true);
+            return $this->redirect(route('church.events.index', $event->slug), navigate: true);
         }
 
         // Redirect to the index page after update
-        $this->redirect(route('events.index'), navigate: true);
+        $this->redirect(route('church.events.index'), navigate: true);
     }
     
     public function render()

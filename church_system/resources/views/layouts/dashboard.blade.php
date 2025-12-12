@@ -12,10 +12,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- (Lucide via WireUI handles icons) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <script src="//unpkg.com/alpinejs" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- ✅ Custom layout styles -->
     <style>
         body {
@@ -105,7 +105,14 @@
     <!-- ✅ WireUI Scripts (critical)
          Loads Alpine.js, Livewire, and Lucide rendering automatically -->
     <wireui:scripts /> 
-
+     
+    <!-- Add this right after <wireui:scripts /> -->
+    <!-- REPLACE your current script with THIS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
+        document.addEventListener('click', () => setTimeout(lucide.createIcons, 150));
+        document.addEventListener('livewire:update', () => setTimeout(lucide.createIcons, 100));
+    </script>
     <!-- ✅ Notifications & Dialog (only for authenticated users) -->
     @auth
         <x-notifications />

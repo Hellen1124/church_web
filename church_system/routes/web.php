@@ -90,10 +90,11 @@ Route::prefix('system-admin')->group(function () {
 
 // 🛡️ Tenant Routes (with auth middleware)
 Route::prefix('church-admin')->group(function () {
-    Route::middleware('permission:manage dashboard')
+    Route::middleware('role:church-admin')
         ->get('/dashboard', [App\Http\Controllers\ChurchAdmin\DashboardController::class, 'index'])
         ->name('church.dashboard');
-
+    
+        // Members Routes
     Route::middleware('permission:view members')
         ->get('/members', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'index'])
         ->name('church.members.index'); 
@@ -101,7 +102,20 @@ Route::prefix('church-admin')->group(function () {
     Route::middleware('permission:create members')
         ->get('/members/create', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'create'])
         ->name('church.members.create');
+    
+    Route::middleware('permission:update members')
+        ->get('/members/{member}/edit', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'edit'])
+        ->name('church.members.edit');
 
+    Route::middleware('permission:delete members')
+        ->delete('/members/{member}', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'destroy'])
+        ->name('church.members.destroy');
+
+    Route::middleware('permission:manage members')
+        ->get('/members/{member}', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'show'])
+        ->name('church.members.show');
+    
+        // Departments Routes
     Route::middleware('permission:view departments')
         ->get('/departments', [App\Http\Controllers\ChurchAdmin\DepartmentsController::class, 'index'])
         ->name('church.departments.index');
@@ -110,6 +124,11 @@ Route::prefix('church-admin')->group(function () {
         ->get('/departments/create', [App\Http\Controllers\ChurchAdmin\DepartmentsController::class, 'create'])
         ->name('church.departments.create');
 
+    Route::middleware('permission:update departments')
+        ->get('/departments/{department}/edit', [App\Http\Controllers\ChurchAdmin\DepartmentsController::class, 'edit'])
+        ->name('church.departments.edit');
+    
+        // Events Routes
     Route::middleware('permission:view events')
         ->get('/event-programmes', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'index'])
         ->name('church.events.index');
@@ -117,4 +136,39 @@ Route::prefix('church-admin')->group(function () {
     Route::middleware('permission:create events')
         ->get('/event-programmes/create', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'create'])
         ->name('church.events.create');
+
+    Route::middleware('permission:update events')
+        ->get('/event-programmes/{event}/edit', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'edit'])
+        ->name('church.events.edit');   
+
+    Route::middleware('permission:delete events')
+        ->delete('/event-programmes/{event}', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'destroy'])
+        ->name('church.events.destroy');
+    
+    Route::middleware('permission:mangae events')
+        ->get('/event-programmes/{event}', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'show'])
+        ->name('church.events.show');
+
+        // sunday collection Routes
+    Route::middleware('permission:view finance')
+        ->get('/collections', [App\Http\Controllers\ChurchAdmin\SundayCollectionController::class, 'index'])
+        ->name('church.offerings.index');
+
+    Route::middleware('permission:manage finance')
+        ->get('/offerings/create', [App\Http\Controllers\ChurchAdmin\OfferingsController::class, 'create'])
+        ->name('church.offerings.create');
+
+    // Expenses Routes
+    Route::middleware('permission:view finance')
+        ->get('/expenses', [App\Http\Controllers\ChurchAdmin\ExpenseController::class, 'index'])
+        ->name('church.expenses.index');
+
+    // Financial Reports Routes
+    Route::middleware('permission:view reports')
+        ->get('/financial-reports', [App\Http\Controllers\ChurchAdmin\FinancialReportController::class, 'index'])
+        ->name('church.financialreports.index');
+
+    Route::middleware('permission:view reports')
+        ->get('/financial-reports/download/{month}/{year}', [App\Http\Controllers\ChurchAdmin\FinancialReportController::class, 'downloadPdf'])
+        ->name('church.financialreports.download');
 });

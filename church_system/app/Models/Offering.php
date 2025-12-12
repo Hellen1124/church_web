@@ -2,11 +2,15 @@
 
 
 namespace App\Models;
+use App\traits\TracksUserActions;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Offering extends Model
 {
+
+    use TracksUserActions;
+    
     protected $fillable = [
         'tenant_id',
         'amount',

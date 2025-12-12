@@ -13,7 +13,7 @@ use App\Traits\TracksUserActions;
 
 class Tenant extends Model
 {
-    use HasFactory, SoftDeletes, BelongsToTenant, TracksUserActions;
+    use HasFactory, SoftDeletes, TracksUserActions;
 
     protected $fillable = [
         'user_id',
@@ -93,5 +93,10 @@ public function offerings()
     public function events()
     {
         return $this->hasMany(\App\Models\Event::class, 'tenant_id');
+    }
+
+    public function sundayCollections()
+    {
+        return $this->hasMany(SundayCollection::class);
     }
 }

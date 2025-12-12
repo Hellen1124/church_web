@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ChurchAdmin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 
 class DepartmentsController extends Controller
 {
@@ -22,4 +23,9 @@ class DepartmentsController extends Controller
         return view('churchadmin.department.index');
     }
    
+    // Edit method
+    public function edit(Department $department)
+    {
+        return view('churchadmin.department.edit', compact('department'));
+    }
 }

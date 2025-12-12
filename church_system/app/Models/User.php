@@ -12,6 +12,7 @@ use App\Models\Member;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\TracksUserActions;
+use App\Traits\BelongsToTenant;
 
 
 class User extends Authenticatable

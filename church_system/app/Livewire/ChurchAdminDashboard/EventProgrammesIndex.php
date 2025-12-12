@@ -2,7 +2,6 @@
 
 namespace App\Livewire\ChurchAdminDashboard;
 
-
 use Livewire\Component;
 use App\Models\Event;
 use Livewire\WithPagination;
@@ -12,50 +11,108 @@ class EventProgrammesIndex extends Component
 {
     use WithPagination;
 
-    // --- Component State Properties ---
     public $search = '';
-    public $filterType = 'all'; // Placeholder for future filtering by category/type
     public $showPastEvents = false;
     public $perPage = 10;
 
     protected $paginationTheme = 'tailwind';
 
-    // --- Livewire Component Methods ---
-
     public function updatingSearch()
     {
-        // Reset the page whenever the search query changes
         $this->resetPage();
+    }
+
+    public function confirmEventDeletion($eventId)
+    {
+        if (!Auth::user()->can('delete events')) {
+            $this->dispatch('notify', [
+                'title' => 'Permission Denied',
+                'description' => 'You are not allowed to delete events.',
+                'icon' => 'error'
+            ]);
+            return;
+        }
+
+        try {
+            $event = Event::where('tenant_id', Auth::user()->tenant_id)
+                ->findOrFail($eventId);
+        } catch (\Exception $e) {
+            $this->dispatch('notify', [
+                'title' => 'Error',
+                'description' => 'Event not found or not accessible.',
+                'icon' => 'error'
+            ]);
+            return;
+        }
+
+        // New WireUI v2 dialog
+        $this->dispatch('dialog.confirm', [
+            'title'       => 'Permanently Delete Event?',
+            'description' => "This will delete '{$event->name}'. This action cannot be undone.",
+            'icon'        => 'error',
+            'accept'      => [
+                'label'  => 'Yes, Delete It',
+                'method' => 'deleteEvent',
+                'params' => [$eventId],
+            ],
+            'reject' => [
+                'label' => 'Cancel'
+            ],
+        ]);
+    }
+
+    public function deleteEvent($eventId)
+    {
+        if (!Auth::user()->can('delete events')) {
+            $this->dispatch('notify', [
+                'title' => 'Permission Denied',
+                'description' => 'You are not allowed to delete events.',
+                'icon' => 'error'
+            ]);
+            return;
+        }
+
+        try {
+            $event = Event::where('tenant_id', Auth::user()->tenant_id)
+                ->findOrFail($eventId);
+
+            $event->delete();
+
+            $this->dispatch('notify', [
+                'title' => 'Deleted',
+                'description' => "Event '{$event->name}' deleted successfully.",
+                'icon' => 'success'
+            ]);
+
+            $this->resetPage();
+        } catch (\Exception $e) {
+            $this->dispatch('notify', [
+                'title' => 'Failed',
+                'description' => 'Could not delete event.',
+                'icon' => 'error'
+            ]);
+        }
     }
 
     public function render()
     {
-        // 1. Start with the base query for the current tenant
-        // Since only authenticated staff/admins access this system, we filter by tenant_id.
-        $query = Event::query()
-            // This line ensures data isolation for the current church/tenant
-            ->where('tenant_id', Auth::user()->tenant_id)
+        $query = Event::where('tenant_id', Auth::user()->tenant_id)
             ->orderBy('start_at', 'asc');
 
-        // 2. Apply Future/Past Event Filter
         if (!$this->showPastEvents) {
-            // Only show events that have not yet ended
             $query->where('end_at', '>=', now());
         }
 
-        // 3. Apply Search Filter (name, description, location)
         if ($this->search) {
             $query->where(function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('description', 'like', '%' . $this->search . '%')
-                  ->orWhere('location', 'like', '%' . $this->search . '%');
+                $q->where('name', 'like', "%{$this->search}%")
+                    ->orWhere('description', 'like', "%{$this->search}%")
+                    ->orWhere('location', 'like', "%{$this->search}%");
             });
         }
-        
-        $events = $query->paginate($this->perPage);
 
         return view('livewire.church-admin-dashboard.event-programmes-index', [
-            'events' => $events,
+            'events' => $query->paginate($this->perPage),
         ]);
     }
 }

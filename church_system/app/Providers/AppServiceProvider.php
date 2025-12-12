@@ -6,25 +6,43 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 
-class AppServiceProvider extends ServiceProvider
+use App\Models\Event; // Assuming your model is here
+// Make sure to remove any use statements for EventPolicy if it doesn't exist
+
+class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * The model to policy mappings for the application.
+     *
+     * @var array<class-string, class-string>
      */
-    public function register(): void
-    {
-        // Must be empty or only contain standard Laravel code
-    }
+    protected $policies = [
+        // Ensure this array is either empty or does NOT map Event to a missing Policy.
+        // For example: Event::class => EventPolicy::class, // REMOVE THIS LINE IF EventPolicy IS MISSING
+    ];
 
     /**
-     * Bootstrap any application services.
+     * Register any authentication / authorization services.
      */
-  public function boot(): void
+    public function boot(): void
     {
-        Relation::morphMap([
-            'role' => \Spatie\Permission\Models\Role::class,
-            'permission' => \Spatie\Permission\Models\Permission::class,
-        ]);
+        $this->registerPolicies();
+
+        // -----------------------------------------------------------------------
+        // MANDATORY: Register a global Gate that delegates all simple string
+        // checks (e.g., @can('update events')) directly to Spatie's permission checker.
+        // -----------------------------------------------------------------------
+        Gate::before(function ($user, $ability) {
+            // Check if the User model has the Spatie method (it does, since you use the HasRoles trait)
+            if (method_exists($user, 'hasPermissionTo')) {
+                // If the user has the permission, return true (grant access).
+                // If they don't, return null to continue checking other Gates/Policies.
+                return $user->hasPermissionTo($ability) ?: null;
+            }
+            return null; // Continue with default Laravel authorization
+        });
+        
     }
 }

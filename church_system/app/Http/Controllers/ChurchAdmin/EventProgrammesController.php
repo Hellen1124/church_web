@@ -19,4 +19,10 @@ class EventProgrammesController extends Controller
     {
         return view('churchadmin.eventprogrammes.create');
     }
+
+    // edit method
+    public function edit($event)
+    {
+        return view('churchadmin.eventprogrammes.edit', compact('event'));
+    }
 }
