@@ -39,13 +39,13 @@ class LoginForm extends Component
         return $phone;
     }
 
-     public function login()
+public function login()
 {
     Log::info('Login attempt started', ['input_phone' => $this->phone]);
 
     // 1. Normalize phone number
     $localPhone = $this->normalizePhone($this->phone);
-    $intlPhone  = '+254' . substr($localPhone, -9); // Safe: works even if starts with 0 or 7
+    $intlPhone  = '+254' . substr($localPhone, -9);
 
     // 2. Validate form + Kenyan phone format
     try {
@@ -61,7 +61,7 @@ class LoginForm extends Component
         throw $e;
     }
 
-    // 3. Find user by normalized local phone
+    // 3. Find user
     $user = User::where('phone', $localPhone)->first();
 
     if (!$user) {
@@ -74,30 +74,28 @@ class LoginForm extends Component
         return;
     }
 
-    // 4. Attempt login
+    // 4. Attempt authentication
     if (!Auth::attempt(['phone' => $localPhone, 'password' => $this->password], $this->remember ?? false)) {
         Log::warning('Login failed – invalid password', ['user_id' => $user->id]);
 
-        RateLimiter::hit($this->throttleKey()); // Optional: if you're throttling
+        RateLimiter::hit($this->throttleKey());
 
         $this->notification()->error(
             title: 'Login Failed',
-            description: 'Incorrect password. Please try again.'
+            description: 'Incorrect password.'
         );
         return;
     }
 
-    // SUCCESS: User is authenticated
+    // 5. Update login timestamp
     $user->forceFill([
         'last_login_at' => now(),
-        
     ])->save();
 
     Log::info('Login successful', [
-        'user_id'    => $user->id,
-        'phone'      => $localPhone,
-        'church_id'  => $user->church_id,
-        'is_system_admin' => is_null($user->church_id),
+        'user_id'   => $user->id,
+        'tenant_id' => $user->tenant_id,
+        'roles'     => $user->getRoleNames(),
     ]);
 
     $this->notification()->success(
@@ -105,11 +103,29 @@ class LoginForm extends Component
         description: 'You have successfully logged in.'
     );
 
-    // MULTI-TENANCY REDIRECT – Professional & Final
-    $route = is_null($user->tenant_id) ? 'admin.dashboard' : 'church.dashboard';
+    /*
+    |--------------------------------------------------------------------------
+    | ROLE + TENANCY AWARE REDIRECT (FINAL)
+    |--------------------------------------------------------------------------
+    */
 
-    return redirect()->route($route);
+    if (is_null($user->tenant_id)) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    if ($user->hasRole('church-admin')) {
+        return redirect()->route('church.dashboard');
+    }
+
+    if ($user->hasRole('church-treasurer')) {
+        return redirect()->route('finance.dashboard');
+    }
+
+    // Absolute safety fallback
+    Auth::logout();
+    abort(403, 'Unauthorized role.');
 }
+
 
     public function forgotPassword()
     {

@@ -25,7 +25,7 @@ class Member extends Model
         'status',
         'baptism_date',
         'confirmed_at',
-        'role',
+       
     ];
 
     protected $casts = [
@@ -107,7 +107,12 @@ class Member extends Model
     {
         return $this->hasOne(User::class); // Member can have one system account
     }
-
+    
+    
+    public function hasRole($role)
+    {
+        return $this->user->hasRole($role);
+    }
     // Accessors & Mutators
 
     public function getFullNameAttribute()

@@ -17,158 +17,170 @@ use App\Livewire\Tenant\ListTenants;
 use App\Livewire\Tenant\CreateTenants;
 use App\Livewire\Tenant\EditTenant;
 
+
+
+
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Utility / Browser Noise
 |--------------------------------------------------------------------------
 */
-// Serve favicon.ico directly
-Route::get('/favicon.ico', function () {
-    return response()->file(public_path('favicon.ico'));
-});
+Route::get('/favicon.ico', fn () =>
+    response()->file(public_path('favicon.ico'))
+);
 
-// Ignore Chrome DevTools .well-known requests
-Route::get('/.well-known/{any}', function () {
-    return response()->noContent(); // 204 No Content
-})->where('any', '.*');
+Route::get('/.well-known/{any}', fn () =>
+    response()->noContent()
+)->where('any', '.*');
 
-// 🌐 Public Routes
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+Route::view('/', 'welcome')->name('home');
+Route::view('/system-portal', 'Landing')->name('system.portal');
 
-Route::get('/register', RegisterForm::class)->name('register');
-Route::get('/otp/verify/{phone}', VerifyOtpForm::class)->name('otp.verify');
-Route::get('/login', LoginForm::class)->name('login');
-Route::get('/password/forgot', ForgotPasswordForm::class)->name('sendResetLink');
+/*
+|--------------------------------------------------------------------------
+| Authentication (Livewire)
+|--------------------------------------------------------------------------
+*/
+Route::get('/login', \App\Livewire\Auth\LoginForm::class)->name('login');
+Route::get('/register', \App\Livewire\Auth\RegisterForm::class)->name('register');
+Route::get('/otp/verify/{phone}', \App\Livewire\Auth\VerifyOtpForm::class)->name('otp.verify');
+Route::get('/password/forgot', \App\Livewire\Auth\ForgotPasswordForm::class)->name('sendResetLink');
 
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
 
-Route::get('/system-portal', function () {
-    return view('Landing');
-})->name('system.portal');
+    /*
+    |--------------------------------------------------------------------------
+    | System Admin Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('system-admin')->group(function () {
 
-// 🛡️ System Admin Routes (with permission middleware)
-Route::prefix('system-admin')->group(function () {
+        Route::middleware('permission:view main dashboard')
+            ->get('/dashboard',
+                [\App\Http\Controllers\SystemAdmin\DashboardController::class, 'index']
+            )->name('admin.dashboard');
 
-     Route::middleware('permission:view main dashboard')
-        ->get('/dashboard', [DashboardController::class, 'index'])
-        ->name('admin.dashboard');
-        Route::get('/settings', fn() => view('settings'))->name('settings');
+        Route::middleware('permission:manage users')
+            ->get('/users',
+                [\App\Http\Controllers\SystemAdmin\UsersController::class, 'index']
+            )->name('system-admin.users.index');
 
-    Route::middleware('permission:manage users')
-        ->get('/users',  [UsersController::class, 'index'])
-        ->name('system-admin.users.index');    
+        Route::middleware('permission:view tenants')
+            ->get('/churches',
+                [\App\Http\Controllers\SystemAdmin\ChurchController::class, 'index']
+            )->name('system-admin.church.index');
 
-    // Group routes by permission
-    Route::middleware('permission:view tenants')->group(function () {
-        Route::get('/churches', [ChurchController::class, 'index'])->name('system-admin.church.index');
+        Route::middleware('permission:create tenants')
+            ->get('/churches/create',
+                [\App\Http\Controllers\SystemAdmin\ChurchController::class, 'create']
+            )->name('system-admin.church.create');
+
+        Route::middleware('permission:view tenants')
+            ->get('/churches/{church}',
+                [\App\Http\Controllers\SystemAdmin\ChurchController::class, 'show']
+            )->name('system-admin.church.show');
+
+        Route::middleware('permission:manage roles')
+            ->get('/role-manager',
+                [\App\Http\Controllers\SystemAdmin\RoleManagerController::class, 'index']
+            )->name('system-admin.rolemanager.index');
+
+        Route::middleware('permission:manage profile')
+            ->get('/profile',
+                [\App\Http\Controllers\SystemAdmin\ProfileManagerController::class, 'show']
+            )->name('system-admin.profile.show');
+
+        Route::post('/logout',
+            [\App\Http\Controllers\Auth\AuthController::class, 'logout']
+        )->name('logout');
     });
 
-    Route::middleware('permission:create tenants')->group(function () {
-        Route::get('/churches/create', [ChurchController::class, 'create'])->name('system-admin.church.create');
+    /*
+    |--------------------------------------------------------------------------
+    | Church Admin Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('church-admin')
+        ->middleware('role:church-admin')
+        ->group(function () {
+
+        Route::get('/dashboard',
+            [\App\Http\Controllers\ChurchAdmin\DashboardController::class, 'index']
+        )->name('church.dashboard');
+
+        Route::middleware('permission:view members')
+            ->get('/members',
+                [\App\Http\Controllers\ChurchAdmin\MembersController::class, 'index']
+            )->name('church.members.index');
+
+        Route::middleware('permission:create members')
+            ->get('/members/create',
+                [\App\Http\Controllers\ChurchAdmin\MembersController::class, 'create']
+            )->name('church.members.create');
+
+        Route::middleware('permission:update members')
+            ->get('/members/{member}/edit',
+                [\App\Http\Controllers\ChurchAdmin\MembersController::class, 'edit']
+            )->name('church.members.edit');
+
+        Route::middleware('permission:delete members')
+            ->delete('/members/{member}',
+                [\App\Http\Controllers\ChurchAdmin\MembersController::class, 'destroy']
+            )->name('church.members.destroy');
+
+        Route::middleware('permission:manage members')
+            ->get('/members/{member}',
+                [\App\Http\Controllers\ChurchAdmin\MembersController::class, 'show']
+            )->name('church.members.show');
+
+        Route::middleware('permission:view finance')
+            ->get('/collections',
+                [\App\Http\Controllers\ChurchAdmin\SundayCollectionController::class, 'index']
+            )->name('church.offerings.index');
+
+        Route::middleware('permission:manage finance')
+            ->get('/offerings/create',
+                [\App\Http\Controllers\ChurchAdmin\OfferingsController::class, 'create']
+            )->name('church.offerings.create');
+
+        Route::middleware('permission:view reports')
+            ->get('/financial-reports',
+                [\App\Http\Controllers\ChurchAdmin\FinancialReportController::class, 'index']
+            )->name('church.financialreports.index');
     });
 
-    // Always put the parameterized route last
-    Route::middleware('permission:view tenants')->group(function () {
-        Route::get('/churches/{church}', [ChurchController::class, 'show'])->name('system-admin.church.show');
+    /*
+    |--------------------------------------------------------------------------
+    | Church Treasurer Routes ✅
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('church-treasurer')
+        ->middleware('role:church-treasurer')
+        ->group(function () {
+
+        Route::get('/dashboard',
+            [\App\Http\Controllers\FinanceAdmin\DashboardController::class, 'index']
+        )->name('finance.dashboard');
+
+        Route::middleware('permission:view finance')
+            ->get('/collections',
+                [\App\Http\Controllers\FinanceAdmin\CollectionController::class, 'index']
+            )->name('finance.collections.index');
+
+        Route::middleware('permission:manage finance')
+            ->get('/expenses',
+                [\App\Http\Controllers\FinanceAdmin\ExpenseController::class, 'index']
+            )->name('finance.expenses.index');
+            
     });
-
-   
-    Route::middleware('permission:manage roles')->group(function () {
-        Route::get('/role-manager', [RoleManagerController::class, 'index'])
-            ->name('system-admin.rolemanager.index');
-    });
-
-    Route::middleware('permission:manage profile')->group(function () {
-        Route::get('/profile', [ProfileManagerController::class, 'show'])
-            ->name('system-admin.profile.show');
-    });
-
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-     
-});
-
-// 🛡️ Tenant Routes (with auth middleware)
-Route::prefix('church-admin')->group(function () {
-    Route::middleware('role:church-admin')
-        ->get('/dashboard', [App\Http\Controllers\ChurchAdmin\DashboardController::class, 'index'])
-        ->name('church.dashboard');
-    
-        // Members Routes
-    Route::middleware('permission:view members')
-        ->get('/members', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'index'])
-        ->name('church.members.index'); 
-
-    Route::middleware('permission:create members')
-        ->get('/members/create', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'create'])
-        ->name('church.members.create');
-    
-    Route::middleware('permission:update members')
-        ->get('/members/{member}/edit', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'edit'])
-        ->name('church.members.edit');
-
-    Route::middleware('permission:delete members')
-        ->delete('/members/{member}', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'destroy'])
-        ->name('church.members.destroy');
-
-    Route::middleware('permission:manage members')
-        ->get('/members/{member}', [App\Http\Controllers\ChurchAdmin\MembersController::class, 'show'])
-        ->name('church.members.show');
-    
-        // Departments Routes
-    Route::middleware('permission:view departments')
-        ->get('/departments', [App\Http\Controllers\ChurchAdmin\DepartmentsController::class, 'index'])
-        ->name('church.departments.index');
-
-    Route::middleware('permission:create departments')
-        ->get('/departments/create', [App\Http\Controllers\ChurchAdmin\DepartmentsController::class, 'create'])
-        ->name('church.departments.create');
-
-    Route::middleware('permission:update departments')
-        ->get('/departments/{department}/edit', [App\Http\Controllers\ChurchAdmin\DepartmentsController::class, 'edit'])
-        ->name('church.departments.edit');
-    
-        // Events Routes
-    Route::middleware('permission:view events')
-        ->get('/event-programmes', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'index'])
-        ->name('church.events.index');
-    
-    Route::middleware('permission:create events')
-        ->get('/event-programmes/create', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'create'])
-        ->name('church.events.create');
-
-    Route::middleware('permission:update events')
-        ->get('/event-programmes/{event}/edit', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'edit'])
-        ->name('church.events.edit');   
-
-    Route::middleware('permission:delete events')
-        ->delete('/event-programmes/{event}', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'destroy'])
-        ->name('church.events.destroy');
-    
-    Route::middleware('permission:mangae events')
-        ->get('/event-programmes/{event}', [App\Http\Controllers\ChurchAdmin\EventProgrammesController::class, 'show'])
-        ->name('church.events.show');
-
-        // sunday collection Routes
-    Route::middleware('permission:view finance')
-        ->get('/collections', [App\Http\Controllers\ChurchAdmin\SundayCollectionController::class, 'index'])
-        ->name('church.offerings.index');
-
-    Route::middleware('permission:manage finance')
-        ->get('/offerings/create', [App\Http\Controllers\ChurchAdmin\OfferingsController::class, 'create'])
-        ->name('church.offerings.create');
-
-    // Expenses Routes
-    Route::middleware('permission:view finance')
-        ->get('/expenses', [App\Http\Controllers\ChurchAdmin\ExpenseController::class, 'index'])
-        ->name('church.expenses.index');
-
-    // Financial Reports Routes
-    Route::middleware('permission:view reports')
-        ->get('/financial-reports', [App\Http\Controllers\ChurchAdmin\FinancialReportController::class, 'index'])
-        ->name('church.financialreports.index');
-
-    Route::middleware('permission:view reports')
-        ->get('/financial-reports/download/{month}/{year}', [App\Http\Controllers\ChurchAdmin\FinancialReportController::class, 'downloadPdf'])
-        ->name('church.financialreports.download');
 });

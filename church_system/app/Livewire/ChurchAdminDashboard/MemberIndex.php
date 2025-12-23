@@ -21,7 +21,7 @@ class MemberIndex extends Component
 
     // Available filters (These should align with your Member model data)
     public $statuses = ['Active', 'Inactive', 'Pending'];
-    public $roles = ['Member', 'Deacon', 'Pastor', 'Volunteer']; 
+    public $roles = ['Member', 'Elder', 'Pastor', 'Volunteer']; 
 
     // --- Deletion State Properties (NEW) ---
     public $memberToDelete = null;
