@@ -1,7 +1,10 @@
 @php use Illuminate\Support\Str; @endphp
+@php use App\Models\SundayCollection; @endphp
+
 @php
-use App\Models\SundayCollection;
+use BladeUI\Icons\Components\Icon;
 @endphp
+
 <div>
     <!-- Treasurer Dashboard Header -->
     <div class="mb-8">
@@ -12,7 +15,7 @@ use App\Models\SundayCollection;
             </div>
             <div class="flex items-center space-x-3">
                 <span class="px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-full text-sm font-semibold flex items-center">
-                    <i data-lucide="shield-check" class="w-4 h-4 mr-1.5"></i>
+                    <x-icon name="shield-check" class="w-4 h-4 mr-1.5" />
                     Treasurer Access
                 </span>
                 <span class="text-sm text-gray-600">
@@ -34,16 +37,18 @@ use App\Models\SundayCollection;
                     </p>
                 </div>
                 <div class="p-2 bg-amber-200 rounded-lg">
-                    <i data-lucide="clock" class="w-6 h-6 text-amber-700"></i>
+                    <x-icon name="clock" class="w-6 h-6 text-amber-700" />
                 </div>
             </div>
             <div class="mt-3">
                 @if($pendingCollections->count() > 0)
-                <button wire:click="$set('status', 'pending')"
-                        class="text-xs font-medium text-amber-700 hover:text-amber-900 flex items-center">
-                    <i data-lucide="arrow-right" class="w-3 h-3 mr-1"></i>
-                    Mark as counted
-                </button>
+                <x-button wire:click="$set('status', 'pending')"
+                          label="Mark as counted"
+                          flat
+                          sm
+                          color="amber"
+                          icon="arrow-right"
+                          class="font-medium" />
                 @else
                 <span class="text-xs text-amber-600">All collections counted</span>
                 @endif
@@ -60,16 +65,18 @@ use App\Models\SundayCollection;
                     </p>
                 </div>
                 <div class="p-2 bg-blue-200 rounded-lg">
-                    <i data-lucide="shield" class="w-6 h-6 text-blue-700"></i>
+                    <x-icon name="shield-check" class="w-6 h-6 text-blue-700" />
                 </div>
             </div>
             <div class="mt-3">
                 @if($countedCollections->count() > 0)
-                <button wire:click="$set('status', 'counted')"
-                        class="text-xs font-medium text-blue-700 hover:text-blue-900 flex items-center">
-                    <i data-lucide="arrow-right" class="w-3 h-3 mr-1"></i>
-                    Verify now
-                </button>
+                <x-button wire:click="$set('status', 'counted')"
+                          label="Verify now"
+                          flat
+                          sm
+                          color="blue"
+                          icon="arrow-right"
+                          class="font-medium" />
                 @else
                 <span class="text-xs text-blue-600">None to verify</span>
                 @endif
@@ -86,16 +93,18 @@ use App\Models\SundayCollection;
                     </p>
                 </div>
                 <div class="p-2 bg-purple-200 rounded-lg">
-                    <i data-lucide="banknote" class="w-6 h-6 text-purple-700"></i>
+                    <x-icon name="banknotes" class="w-6 h-6 text-purple-700" />
                 </div>
             </div>
             <div class="mt-3">
                 @if($verifiedCollections->count() > 0)
-                <button wire:click="$set('status', 'verified')"
-                    class="text-xs font-medium text-purple-700 hover:text-purple-900 flex items-center">
-                    <i data-lucide="arrow-right" class="w-3 h-3 mr-1"></i>
-                    Bank now
-                </button>
+                <x-button wire:click="$set('status', 'verified')"
+                          label="Bank now"
+                          flat
+                          sm
+                          color="purple"
+                          icon="arrow-right"
+                          class="font-medium" />
                 @else
                 <span class="text-xs text-purple-600">None to bank</span>
                 @endif
@@ -110,7 +119,7 @@ use App\Models\SundayCollection;
                     <p class="text-2xl font-bold text-emerald-900 mt-1">Ksh{{ number_format($currentMonthTotal, 2) }}</p>
                 </div>
                 <div class="p-2 bg-emerald-200 rounded-lg">
-                    <i data-lucide="calendar" class="w-6 h-6 text-emerald-700"></i>
+                    <x-icon name="calendar" class="w-6 h-6 text-emerald-700" />
                 </div>
             </div>
             <div class="mt-3">
@@ -123,16 +132,17 @@ use App\Models\SundayCollection;
 
     <!-- Quick Action Buttons -->
     <div class="flex flex-wrap gap-3 mb-6">
-        <button wire:click="$toggle('showForm')" 
-                class="inline-flex items-center px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition duration-200 shadow-sm hover:shadow">
-            <i data-lucide="{{ $showForm ? 'x' : 'plus-circle' }}" class="w-5 h-5 mr-2"></i>
-            {{ $showForm ? 'Close Form' : 'Record New Collection' }}
-        </button>
+        <x-button wire:click="$toggle('showForm')"
+                  :label="$showForm ? 'Close Form' : 'Record New Collection'"
+                  primary
+                  :icon="$showForm ? 'x-mark' : 'plus-circle'"
+                  class="font-semibold shadow-sm hover:shadow" />
         
-        <button wire:click="export" 
-                class="inline-flex items-center px-5 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
-            <i data-lucide="download" class="w-5 h-5 mr-2"></i> Export CSV
-        </button>
+        <x-button wire:click="export"
+                  label="Export CSV"
+                  secondary
+                  icon="arrow-down-tray"
+                  class="font-semibold" />
     </div>
 
     <!-- Collection Form -->
@@ -140,84 +150,91 @@ use App\Models\SundayCollection;
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6" id="collection-form">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-lg font-bold text-gray-900">
-                <i data-lucide="{{ $editingId ? 'edit' : 'plus-circle' }}" class="w-5 h-5 inline mr-2"></i>
+                <x-icon name="pencil-square" class="w-5 h-5 inline mr-2" />
                 {{ $editingId ? 'Edit Collection' : 'New Collection' }}
             </h2>
             
             @if($editingId)
-            <button wire:click="resetForm" class="text-sm text-gray-500 hover:text-gray-700 flex items-center">
-                <i data-lucide="x" class="w-4 h-4 mr-1"></i> Cancel
-            </button>
+            <x-button wire:click="resetForm"
+                      label="Cancel"
+                      flat
+                      sm
+                      icon="x-mark" />
             @endif
         </div>
 
         <form wire:submit.prevent="save" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Collection Date -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Collection Date *</label>
-                    <input type="date" wire:model="collection_date" 
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                    @error('collection_date') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-                </div>
+                <x-datetime-picker
+                    label="Collection Date *"
+                    placeholder="Select date"
+                    wire:model="collection_date"
+                    without-time
+                    :max-date="now()"
+                />
 
-                <!-- Counted By (auto-filled) -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Counted By *</label>
-
-                    <input type="text" wire:model="counted_by"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-gray-50">
-
-                    @error('counted_by')
-                        <span class="text-sm text-red-600">{{ $message }}</span>
-                    @enderror
-                </div>
+                <!-- Counted By -->
+                <x-input
+                    label="Counted By *"
+                    wire:model="counted_by"
+                    placeholder="Enter counter name"
+                    class="bg-gray-50"
+                />
             </div>
 
             <!-- Amounts Grid -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <!-- First Service -->
                 <div class="bg-emerald-50 border border-emerald-100 rounded-lg p-4">
-                    <label class="block text-sm font-medium text-emerald-700 mb-1">First Service</label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-3 text-gray-500">Ksh</span>
-                        <input type="number" step="0.01" wire:model="first_service_amount" 
-                               class="w-full pl-8 pr-4 py-2.5 border border-emerald-200 bg-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                    </div>
-                    @error('first_service_amount') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+                    <x-input
+                        label="First Service"
+                        wire:model="first_service_amount"
+                        type="number"
+                        step="0.01"
+                        prefix="Ksh"
+                        placeholder="0.00"
+                        class="border-emerald-200"
+                    />
                 </div>
 
                 <!-- Second Service -->
                 <div class="bg-blue-50 border border-blue-100 rounded-lg p-4">
-                    <label class="block text-sm font-medium text-blue-700 mb-1">Second Service</label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-3 text-gray-500">Ksh</span>
-                        <input type="number" step="0.01" wire:model="second_service_amount" 
-                               class="w-full pl-8 pr-4 py-2.5 border border-blue-200 bg-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                    </div>
-                    @error('second_service_amount') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+                    <x-input
+                        label="Second Service"
+                        wire:model="second_service_amount"
+                        type="number"
+                        step="0.01"
+                        prefix="Ksh"
+                        placeholder="0.00"
+                        class="border-blue-200"
+                    />
                 </div>
 
                 <!-- Children's Service -->
                 <div class="bg-purple-50 border border-purple-100 rounded-lg p-4">
-                    <label class="block text-sm font-medium text-purple-700 mb-1">Children's Service</label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-3 text-gray-500">Ksh</span>
-                        <input type="number" step="0.01" wire:model="children_service_amount" 
-                               class="w-full pl-8 pr-4 py-2.5 border border-purple-200 bg-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
-                    </div>
-                    @error('children_service_amount') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+                    <x-input
+                        label="Children's Service"
+                        wire:model="children_service_amount"
+                        type="number"
+                        step="0.01"
+                        prefix="Ksh"
+                        placeholder="0.00"
+                        class="border-purple-200"
+                    />
                 </div>
 
                 <!-- M-Pesa Total -->
                 <div class="bg-amber-50 border border-amber-100 rounded-lg p-4">
-                    <label class="block text-sm font-medium text-amber-700 mb-1">M-Pesa Total</label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-3 text-gray-500">Ksh</span>
-                        <input type="number" step="0.01" wire:model="mobile_mpesa_amount" 
-                               class="w-full pl-8 pr-4 py-2.5 border border-amber-200 bg-white rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition">
-                    </div>
-                    @error('mobile_mpesa_amount') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+                    <x-input
+                        label="M-Pesa Total"
+                        wire:model="mobile_mpesa_amount"
+                        type="number"
+                        step="0.01"
+                        prefix="Ksh"
+                        placeholder="0.00"
+                        class="border-amber-200"
+                    />
                 </div>
             </div>
 
@@ -236,21 +253,20 @@ use App\Models\SundayCollection;
             </div>
 
             <!-- Notes -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
-                <textarea wire:model="notes" rows="2" 
-                          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                          placeholder="Any special notes... (e.g., Thanksgiving Sunday, Special program, etc.)"></textarea>
-                @error('notes') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-            </div>
+            <x-textarea
+                label="Notes (Optional)"
+                wire:model="notes"
+                rows="2"
+                placeholder="Any special notes... (e.g., Thanksgiving Sunday, Special program, etc.)"
+            />
 
             <!-- Submit Button -->
             <div class="pt-2">
-                <button type="submit" 
-                        class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition duration-200 shadow-sm hover:shadow">
-                    <i data-lucide="{{ $editingId ? 'save' : 'check-circle' }}" class="w-5 h-5 mr-2"></i>
-                    {{ $editingId ? 'Update Collection' : 'Save Collection' }}
-                </button>
+                <x-button type="submit"
+                          :label="$editingId ? 'Update Collection' : 'Save Collection'"
+                          primary
+                          :icon="$editingId ? 'check-circle' : 'plus-circle'"
+                          class="font-semibold shadow-sm hover:shadow" />
             </div>
         </form>
     </div>
@@ -295,18 +311,19 @@ use App\Models\SundayCollection;
                 
                 <div class="mt-4 flex items-center justify-end space-x-2">
                     @if($collection->counted_by === auth()->user()->name)
-                    <button wire:click="edit({{ $collection->id }})"
-                            class="px-3 py-1.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition flex items-center">
-                        <i data-lucide="edit" class="w-3 h-3 mr-1"></i>
-                        Edit
-                    </button>
+                    <x-button wire:click="edit({{ $collection->id }})"
+                              label="Edit"
+                              flat
+                              sm
+                              icon="pencil-square"
+                              color="gray" />
                     @endif
                     
-                    <button wire:click="markAsCounted({{ $collection->id }})"
-                            class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition flex items-center">
-                        <i data-lucide="check" class="w-3 h-3 mr-1"></i>
-                        Mark as Counted
-                    </button>
+                    <x-button wire:click="markAsCounted({{ $collection->id }})"
+                              label="Mark as Counted"
+                              sm
+                              primary
+                              icon="check" />
                 </div>
             </div>
             @endforeach
@@ -314,11 +331,13 @@ use App\Models\SundayCollection;
         
         @if($pendingCollections->count() > 6)
         <div class="mt-4 text-center">
-            <button wire:click="$set('status', 'pending')"
-                    class="text-sm font-medium text-amber-600 hover:text-amber-800 flex items-center justify-center mx-auto">
-                <i data-lucide="list" class="w-4 h-4 mr-1"></i>
-                View all {{ $pendingCollections->count() }} pending
-            </button>
+            <x-button wire:click="$set('status', 'pending')"
+                      :label="'View all ' . $pendingCollections->count() . ' pending'"
+                      flat
+                      sm
+                      color="amber"
+                      icon="list-bullet"
+                      class="font-medium" />
         </div>
         @endif
     </div>
@@ -376,11 +395,11 @@ use App\Models\SundayCollection;
                 </div>
                 
                 <div class="mt-4">
-                    <button wire:click="verifyCollection({{ $collection->id }})"
-                            class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition flex items-center justify-center">
-                        <i data-lucide="shield-check" class="w-4 h-4 mr-2"></i>
-                        Verify Collection
-                    </button>
+                    <x-button wire:click="verifyCollection({{ $collection->id }})"
+                              label="Verify Collection"
+                              full
+                              primary
+                              icon="shield-check" />
                 </div>
             </div>
             @endforeach
@@ -388,11 +407,13 @@ use App\Models\SundayCollection;
         
         @if($countedCollections->count() > 6)
         <div class="mt-4 text-center">
-            <button wire:click="$set('status', 'counted')"
-                    class="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center justify-center mx-auto">
-                <i data-lucide="list" class="w-4 h-4 mr-1"></i>
-                View all {{ $countedCollections->count() }} to verify
-            </button>
+            <x-button wire:click="$set('status', 'counted')"
+                      :label="'View all ' . $countedCollections->count() . ' to verify'"
+                      flat
+                      sm
+                      color="blue"
+                      icon="list-bullet"
+                      class="font-medium" />
         </div>
         @endif
     </div>
@@ -435,18 +456,19 @@ use App\Models\SundayCollection;
                         </span>
                     </div>
                     
-                    <div class="text-xs text-gray-500">
-                        <i data-lucide="calendar" class="w-3 h-3 inline mr-1"></i>
+                    <div class="text-xs text-gray-500 flex items-center">
+                        <x-icon name="calendar" class="w-3 h-3 mr-1" />
                         {{ $collection->collection_date->diffForHumans() }}
                     </div>
                 </div>
                 
                 <div class="mt-4">
-                    <button wire:click="startBanking({{ $collection->id }})"
-                            class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition flex items-center justify-center">
-                        <i data-lucide="banknote" class="w-4 h-4 mr-2"></i>
-                        Mark as Banked
-                    </button>
+                    <x-button wire:click="startBanking({{ $collection->id }})"
+                              label="Mark as Banked"
+                              full
+                              primary
+                              color="purple"
+                              icon="banknotes" />
                 </div>
             </div>
             @endforeach
@@ -454,11 +476,13 @@ use App\Models\SundayCollection;
         
         @if($verifiedCollections->count() > 6)
         <div class="mt-4 text-center">
-            <button wire:click="$set('status', 'verified')"
-                    class="text-sm font-medium text-purple-600 hover:text-purple-800 flex items-center justify-center mx-auto">
-                <i data-lucide="list" class="w-4 h-4 mr-1"></i>
-                View all {{ $verifiedCollections->count() }} to bank
-            </button>
+            <x-button wire:click="$set('status', 'verified')"
+                      :label="'View all ' . $verifiedCollections->count() . ' to bank'"
+                      flat
+                      sm
+                      color="purple"
+                      icon="list-bullet"
+                      class="font-medium" />
         </div>
         @endif
     </div>
@@ -475,12 +499,11 @@ use App\Models\SundayCollection;
         
         <!-- Search Box -->
         <div class="w-full md:w-64">
-            <div class="relative">
-                <i data-lucide="search" class="absolute left-3 top-3.5 w-4 h-4 text-gray-400"></i>
-                <input type="text" wire:model.debounce.300ms="search" 
-                       class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                       placeholder="Search collections...">
-            </div>
+            <x-input
+                wire:model.debounce.300ms="search"
+                placeholder="Search collections..."
+                icon="magnifying-glass"
+            />
         </div>
     </div>
 
@@ -488,63 +511,65 @@ use App\Models\SundayCollection;
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- Status Filter -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select wire:model="status" 
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                    <option value="">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="counted">Counted</option>
-                    <option value="verified">Verified</option>
-                    <option value="banked">Banked</option>
-                    <option value="cancelled">Cancelled</option>
-                </select>
-            </div>
+            <x-select
+                label="Status"
+                wire:model="status"
+                placeholder="All Status"
+                :options="[
+                    ['value' => '', 'label' => 'All Status'],
+                    ['value' => 'pending', 'label' => 'Pending'],
+                    ['value' => 'counted', 'label' => 'Counted'],
+                    ['value' => 'verified', 'label' => 'Verified'],
+                    ['value' => 'banked', 'label' => 'Banked'],
+                    ['value' => 'cancelled', 'label' => 'Cancelled'],
+                ]"
+            />
 
             <!-- Month Filter -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Month</label>
-                <select wire:model="month" 
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                    <option value="">All Months</option>
-                    @foreach(range(1, 12) as $m)
-                        <option value="{{ $m }}">{{ date('F', mktime(0, 0, 0, $m, 1)) }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <x-select
+                label="Month"
+                wire:model="month"
+                placeholder="All Months"
+                :options="collect(range(1, 12))->map(fn($m) => [
+                    'value' => $m,
+                    'label' => date('F', mktime(0, 0, 0, $m, 1))
+                ])->prepend(['value' => '', 'label' => 'All Months'])"
+            />
 
             <!-- Year Filter -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Year</label>
-                <select wire:model="year" 
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                    <option value="">All Years</option>
-                    @foreach(range(date('Y'), date('Y') - 2) as $y)
-                        <option value="{{ $y }}">{{ $y }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <x-select
+                label="Year"
+                wire:model="year"
+                placeholder="All Years"
+                :options="collect(range(date('Y'), date('Y') - 2))->map(fn($y) => [
+                    'value' => $y,
+                    'label' => $y
+                ])->prepend(['value' => '', 'label' => 'All Years'])"
+            />
 
             <!-- Items Per Page -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Show</label>
-                <select wire:model="perPage" 
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                    <option value="10">10 per page</option>
-                    <option value="15">15 per page</option>
-                    <option value="25">25 per page</option>
-                    <option value="50">50 per page</option>
-                </select>
-            </div>
+            <x-select
+                label="Show"
+                wire:model="perPage"
+                :options="[
+                    ['value' => 10, 'label' => '10 per page'],
+                    ['value' => 15, 'label' => '15 per page'],
+                    ['value' => 25, 'label' => '25 per page'],
+                    ['value' => 50, 'label' => '50 per page'],
+                ]"
+            />
         </div>
         
         <!-- Clear Filters -->
         @if($search || $status || $month || $year)
         <div class="mt-4 pt-4 border-t border-gray-100">
-            <button wire:click="clearFilters" 
-                    class="inline-flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
-                <i data-lucide="filter-x" class="w-4 h-4 mr-2"></i> Clear All Filters
-            </button>
+            <x-button wire:click="clearFilters"
+                      label="Clear All Filters"
+                      flat
+                      sm
+                      color="gray"
+                      icon="funnel-x-mark"
+                      class="hover:text-gray-900" />
         </div>
         @endif
     </div>
@@ -558,199 +583,199 @@ use App\Models\SundayCollection;
     </div>
 
     <!-- Collections Table -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden" wire:loading.remove wire:target="search, status, month, year, perPage">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                            wire:click="sortBy('collection_date')">
-                            <div class="flex items-center">
-                                Date
-                                @if($sortField === 'collection_date')
-                                <i data-lucide="chevron-{{ $sortDirection === 'asc' ? 'up' : 'down' }}" class="w-4 h-4 ml-1"></i>
-                                @endif
+    <x-card class="overflow-hidden" wire:loading.remove wire:target="search, status, month, year, perPage">
+        <x-table>
+            <x-slot name="thead">
+                <x-table.th sortable wire:click="sortBy('collection_date')" :direction="$sortField === 'collection_date' ? $sortDirection : null">
+                    Date
+                </x-table.th>
+                <x-table.th>Amounts</x-table.th>
+                <x-table.th>Status</x-table.th>
+                <x-table.th>Counted By</x-table.th>
+                <x-table.th>Actions</x-table.th>
+            </x-slot>
+            
+            <x-slot name="tbody">
+                @forelse($collections as $collection)
+                <x-table.tr wire:key="row-{{ $collection->id }}" class="hover:bg-gray-50">
+                    <!-- Date -->
+                    <x-table.td>
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">
+                                {{ $collection->collection_date->format('D, M j, Y') }}
                             </div>
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Amounts</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Counted By</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($collections as $collection)
-                    <tr class="hover:bg-gray-50 transition">
-                        <!-- Date -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div>
-                                <div class="text-sm font-medium text-gray-900">
-                                    {{ $collection->collection_date->format('D, M j, Y') }}
-                                </div>
-                                @if($collection->bank_deposit_date)
-                                <div class="text-xs text-gray-500">
-                                    Banked: {{ $collection->bank_deposit_date->format('M j') }}
-                                </div>
-                                @endif
-                            </div>
-                        </td>
-
-                        <!-- Amounts -->
-                        <td class="px-6 py-4">
-                            <div class="space-y-1">
-                                <div class="flex items-center text-sm">
-                                    <span class="text-gray-600">Cash:</span>
-                                    <span class="ml-auto font-medium">Ksh{{ number_format($this->getTotalPhysicalCash($collection), 2) }}</span>
-                                </div>
-                                <div class="flex items-center text-sm">
-                                    <span class="text-gray-600">M-Pesa:</span>
-                                    <span class="ml-auto font-medium text-amber-700">Ksh{{ number_format($collection->mobile_mpesa_amount, 2) }}</span>
-                                </div>
-                                <div class="flex items-center justify-between pt-1 border-t border-gray-100">
-                                    <span class="text-sm font-medium text-gray-900">Total:</span>
-                                    <span class="font-bold text-gray-900">Ksh{{ number_format($collection->total_amount, 2) }}</span>
-                                </div>
-                            </div>
-                        </td>
-
-                        <!-- Status -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @php
-                                $statusColors = [
-                                    'pending' => 'bg-yellow-100 text-yellow-800',
-                                    'counted' => 'bg-blue-100 text-blue-800',
-                                    'verified' => 'bg-purple-100 text-purple-800',
-                                    'banked' => 'bg-green-100 text-green-800',
-                                    'cancelled' => 'bg-red-100 text-red-800',
-                                ];
-                            @endphp
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $statusColors[$collection->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                {{ ucfirst($collection->status) }}
-                            </span>
-                            
-                            @if($collection->verified_by)
-                            <div class="mt-1 text-xs text-gray-500 flex items-center">
-                                <i data-lucide="user-check" class="w-3 h-3 mr-1 text-green-500"></i>
-                                Verified by {{ $collection->firstVerifier->name ?? 'Treasurer' }}
+                            @if($collection->bank_deposit_date)
+                            <div class="text-xs text-gray-500">
+                                Banked: {{ $collection->bank_deposit_date->format('M j') }}
                             </div>
                             @endif
-                        </td>
+                        </div>
+                    </x-table.td>
 
-                        <!-- Counted By -->
-                        <td class="px-6 py-4">
-                            <div class="text-sm text-gray-900">{{ $collection->counted_by }}</div>
-                            @if($collection->notes)
-                            <div class="text-xs text-gray-500 truncate max-w-xs" title="{{ $collection->notes }}">
-                                <i data-lucide="message-square" class="w-3 h-3 inline mr-1"></i>
-                                {{ Str::limit($collection->notes, 30) }}
+                    <!-- Amounts -->
+                    <x-table.td>
+                        <div class="space-y-1">
+                            <div class="flex items-center text-sm">
+                                <span class="text-gray-600">Cash:</span>
+                                <span class="ml-auto font-medium">Ksh{{ number_format($this->getTotalPhysicalCash($collection), 2) }}</span>
                             </div>
+                            <div class="flex items-center text-sm">
+                                <span class="text-gray-600">M-Pesa:</span>
+                                <span class="ml-auto font-medium text-amber-700">Ksh{{ number_format($collection->mobile_mpesa_amount, 2) }}</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-1 border-t border-gray-100">
+                                <span class="text-sm font-medium text-gray-900">Total:</span>
+                                <span class="font-bold text-gray-900">Ksh{{ number_format($collection->total_amount, 2) }}</span>
+                            </div>
+                        </div>
+                    </x-table.td>
+
+                    <!-- Status -->
+                    <x-table.td>
+                        @php
+                            $statusColors = [
+                                'pending' => 'bg-yellow-100 text-yellow-800',
+                                'counted' => 'bg-blue-100 text-blue-800',
+                                'verified' => 'bg-purple-100 text-purple-800',
+                                'banked' => 'bg-green-100 text-green-800',
+                                'cancelled' => 'bg-red-100 text-red-800',
+                            ];
+                        @endphp
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $statusColors[$collection->status] ?? 'bg-gray-100 text-gray-800' }}">
+                            {{ ucfirst($collection->status) }}
+                        </span>
+                        
+                        @if($collection->verified_by)
+                        <div class="mt-1 text-xs text-gray-500 flex items-center">
+                            <x-icon name="user-check" class="w-3 h-3 mr-1 text-green-500" />
+                            Verified by {{ $collection->firstVerifier->name ?? 'Treasurer' }}
+                        </div>
+                        @endif
+                    </x-table.td>
+
+                    <!-- Counted By -->
+                    <x-table.td>
+                        <div class="text-sm text-gray-900">{{ $collection->counted_by }}</div>
+                        @if($collection->notes)
+                        <div class="text-xs text-gray-500 truncate max-w-xs" title="{{ $collection->notes }}">
+                            <x-icon name="chat-bubble-left-right" class="w-3 h-3 inline mr-1" />
+                            {{ Str::limit($collection->notes, 30) }}
+                        </div>
+                        @endif
+                    </x-table.td>
+
+                    <!-- Actions -->
+                    <x-table.td>
+                        <div class="flex items-center space-x-1">
+                            <!-- Edit -->
+                            @if(in_array($collection->status, ['pending', 'counted']) && $collection->counted_by === auth()->user()->name)
+                            <x-button wire:click="edit({{ $collection->id }})"
+                                      icon="pencil-square"
+                                      flat
+                                      xs
+                                      color="blue"
+                                      title="Edit" />
                             @endif
-                        </td>
 
-                        <!-- Simplified Actions -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center space-x-1">
-                                <!-- Edit (only for pending/counted collections they created) -->
-                                @if(in_array($collection->status, ['pending', 'counted']) && $collection->counted_by === auth()->user()->name)
-                                <button wire:click="edit({{ $collection->id }})" 
-                                        class="p-1.5 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition"
-                                        title="Edit">
-                                    <i data-lucide="edit" class="w-4 h-4"></i>
-                                </button>
-                                @endif
+                            <!-- Mark as Counted -->
+                            @if($collection->status === 'pending')
+                            <x-button wire:click="markAsCounted({{ $collection->id }})"
+                                      icon="check"
+                                      flat
+                                      xs
+                                      color="green"
+                                      title="Mark as Counted" />
+                            @endif
 
-                                <!-- Mark as Counted -->
-                                @if($collection->status === 'pending')
-                                <button wire:click="markAsCounted({{ $collection->id }})" 
-                                        class="p-1.5 text-green-600 hover:text-green-900 hover:bg-green-50 rounded transition"
-                                        title="Mark as Counted">
-                                    <i data-lucide="check" class="w-4 h-4"></i>
-                                </button>
-                                @endif
+                            <!-- Verify Collection -->
+                            @if($collection->status === 'counted')
+                            <x-button wire:click="verifyCollection({{ $collection->id }})"
+                                      icon="shield-check"
+                                      flat
+                                      xs
+                                      color="indigo"
+                                      title="Verify" />
+                            @endif
 
-                                <!-- Verify Collection -->
-                                @if($collection->status === 'counted')
-                                <button wire:click="verifyCollection({{ $collection->id }})" 
-                                        class="p-1.5 text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50 rounded transition"
-                                        title="Verify">
-                                    <i data-lucide="shield-check" class="w-4 h-4"></i>
-                                </button>
-                                @endif
+                            <!-- Mark as Banked -->
+                            @if($collection->status === 'verified')
+                            <x-button wire:click="startBanking({{ $collection->id }})"
+                                      icon="banknotes"
+                                      flat
+                                      xs
+                                      color="emerald"
+                                      title="Mark as Banked" />
+                            @endif
 
-                                <!-- Mark as Banked -->
-                                @if($collection->status === 'verified')
-                                <button wire:click="startBanking({{ $collection->id }})" 
-                                        class="p-1.5 text-emerald-600 hover:text-emerald-900 hover:bg-emerald-50 rounded transition"
-                                        title="Mark as Banked">
-                                    <i data-lucide="banknote" class="w-4 h-4"></i>
-                                </button>
-                                @endif
+                            <!-- Duplicate -->
+                            <x-button wire:click="duplicateCollection({{ $collection->id }})"
+                                      icon="document-duplicate"
+                                      flat
+                                      xs
+                                      color="purple"
+                                      title="Duplicate" />
 
-                                <!-- Duplicate -->
-                                <button wire:click="duplicateCollection({{ $collection->id }})" 
-                                        class="p-1.5 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded transition"
-                                        title="Duplicate">
-                                    <i data-lucide="copy" class="w-4 h-4"></i>
-                                </button>
-
-                                <!-- Cancel -->
-                                @if(in_array($collection->status, ['pending', 'counted']))
-                                <button wire:click="cancel({{ $collection->id }})" 
-                                        onclick="return confirm('Are you sure you want to cancel this collection?')"
-                                        class="p-1.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition"
-                                        title="Cancel">
-                                    <i data-lucide="x-circle" class="w-4 h-4"></i>
-                                </button>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-12 text-center">
-                            <div class="text-gray-400">
-                                <i data-lucide="calendar-x" class="w-12 h-12 mx-auto mb-3"></i>
-                                <p class="text-lg font-medium text-gray-500">No Sunday collections found</p>
-                                <button wire:click="$toggle('showForm')"
-                                        class="mt-3 inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition">
-                                    <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
-                                    Record First Collection
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
+                            <!-- Cancel -->
+                            @if(in_array($collection->status, ['pending', 'counted']))
+                            <x-button wire:click="cancel({{ $collection->id }})"
+                                      icon="x-circle"
+                                      flat
+                                      xs
+                                      color="red"
+                                      title="Cancel"
+                                      x-on:click="confirm('Are you sure you want to cancel this collection?') || $event.stopImmediatePropagation()" />
+                            @endif
+                        </div>
+                    </x-table.td>
+                </x-table.tr>
+                @empty
+                <x-table.tr>
+                    <x-table.td colspan="5" class="text-center py-12">
+                        <div class="text-gray-400">
+                            <x-icon name="calendar-x-mark" class="w-12 h-12 mx-auto mb-3" />
+                            <p class="text-lg font-medium text-gray-500">No Sunday collections found</p>
+                            <x-button wire:click="$toggle('showForm')"
+                                      label="Record First Collection"
+                                      primary
+                                      icon="plus"
+                                      class="mt-3" />
+                        </div>
+                    </x-table.td>
+                </x-table.tr>
+                @endforelse
+            </x-slot>
+        </x-table>
+        
         <!-- Pagination -->
         @if($collections->hasPages())
-        <div class="bg-white px-6 py-4 border-t border-gray-200">
+        <div class="px-6 py-4 border-t border-gray-200">
             {{ $collections->links() }}
         </div>
         @endif
-    </div>
+    </x-card>
 
     <!-- Monthly Summary -->
     @if($monthlyBreakdown->count() > 0)
-    <div class="mt-8 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-            <i data-lucide="trending-up" class="w-5 h-5 mr-2"></i> Monthly Collection Summary
-        </h3>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead>
-                    <tr>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Month</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Collections</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cash Total</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">M-Pesa Total</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Grand Total</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
+    <div class="mt-8">
+        <x-card>
+            <x-slot name="title">
+                <div class="flex items-center">
+                    <x-icon name="chart-bar" class="w-5 h-5 mr-2" />
+                    Monthly Collection Summary
+                </div>
+            </x-slot>
+            
+            <x-table>
+                <x-slot name="thead">
+                    <x-table.th>Month</x-table.th>
+                    <x-table.th>Collections</x-table.th>
+                    <x-table.th>Cash Total</x-table.th>
+                    <x-table.th>M-Pesa Total</x-table.th>
+                    <x-table.th>Grand Total</x-table.th>
+                    <x-table.th>Status</x-table.th>
+                </x-slot>
+                
+                <x-slot name="tbody">
                     @foreach($monthlyBreakdown as $monthData)
                     @php
                         $monthCollections = SundayCollection::forCurrentTenant()
@@ -767,96 +792,84 @@ use App\Models\SundayCollection;
                         $banked = $monthCollections->where('status', 'banked')->count();
                         $total = $monthCollections->count();
                     @endphp
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3">
+                    <x-table.tr class="hover:bg-gray-50">
+                        <x-table.td>
                             <span class="font-medium text-gray-900">
                                 {{ date('F', mktime(0, 0, 0, $monthData->month, 1)) }} {{ $monthData->year }}
                             </span>
-                        </td>
-                        <td class="px-4 py-3">
+                        </x-table.td>
+                        <x-table.td>
                             <span class="text-sm text-gray-600">{{ $total }} Sundays</span>
-                        </td>
-                        <td class="px-4 py-3">
+                        </x-table.td>
+                        <x-table.td>
                             <span class="font-medium">Ksh{{ number_format($cash, 2) }}</span>
-                        </td>
-                        <td class="px-4 py-3">
+                        </x-table.td>
+                        <x-table.td>
                             <span class="font-medium">Ksh{{ number_format($mpesa, 2) }}</span>
-                        </td>
-                        <td class="px-4 py-3">
+                        </x-table.td>
+                        <x-table.td>
                             <span class="font-bold text-gray-900">Ksh{{ number_format($monthData->total, 2) }}</span>
-                        </td>
-                        <td class="px-4 py-3">
+                        </x-table.td>
+                        <x-table.td>
                             <span class="text-sm {{ $banked === $total ? 'text-green-600' : ($banked > 0 ? 'text-amber-600' : 'text-red-600') }}">
                                 @if($banked === $total)
-                                    <i data-lucide="check-circle" class="w-3 h-3 inline mr-1"></i> Fully banked
+                                    <x-icon name="check-circle" class="w-3 h-3 inline mr-1" />
+                                    Fully banked
                                 @elseif($banked > 0)
-                                    <i data-lucide="alert-circle" class="w-3 h-3 inline mr-1"></i> {{ $banked }}/{{ $total }} banked
+                                    <x-icon name="exclamation-circle" class="w-3 h-3 inline mr-1" />
+                                    {{ $banked }}/{{ $total }} banked
                                 @else
-                                    <i data-lucide="x-circle" class="w-3 h-3 inline mr-1"></i> Not banked
+                                    <x-icon name="x-circle" class="w-3 h-3 inline mr-1" />
+                                    Not banked
                                 @endif
                             </span>
-                        </td>
-                    </tr>
+                        </x-table.td>
+                    </x-table.tr>
                     @endforeach
-                </tbody>
-            </table>
-        </div>
+                </x-slot>
+            </x-table>
+        </x-card>
     </div>
     @endif
 
     <!-- Banking Modal -->
-    @if($bankingId)
-    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 p-4" 
-         x-data="{ open: true }" 
-         x-show="open"
-         x-transition>
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6" @click.outside="open = false">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-gray-900">Mark as Banked</h3>
-                <button @click="open = false" class="text-gray-400 hover:text-gray-600">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            
+    <x-modal wire:model.defer="bankingId" max-width="md">
+        <x-card>
+            <x-slot name="title">
+                <div class="flex items-center">
+                    <x-icon name="banknotes" class="w-5 h-5 mr-2" />
+                    Mark as Banked
+                </div>
+            </x-slot>
+
             <form wire:submit.prevent="markAsBanked" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Deposit Date *</label>
-                    <input type="date" wire:model="bank_deposit_date" 
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                           max="{{ now()->format('Y-m-d') }}">
-                    @error('bank_deposit_date') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-                </div>
+                <x-datetime-picker
+                    label="Deposit Date *"
+                    placeholder="Select deposit date"
+                    wire:model="bank_deposit_date"
+                    without-time
+                    :max-date="now()"
+                />
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Bank Slip Number (Optional)</label>
-                    <input type="text" wire:model="bank_slip_number" 
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                           placeholder="e.g., DEP-00123">
-                </div>
+                <x-input
+                    label="Bank Slip Number (Optional)"
+                    wire:model="bank_slip_number"
+                    placeholder="e.g., DEP-00123"
+                />
                 
-                <div class="pt-4 border-t border-gray-200 flex items-center justify-end space-x-3">
-                    <button type="button" @click="open = false" 
-                            class="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
-                        Cancel
-                    </button>
-                    <button type="submit" 
-                            class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition">
-                        <i data-lucide="check-circle" class="w-5 h-5 inline mr-2"></i>
-                        Confirm Banking
-                    </button>
-                </div>
+                <x-slot name="footer">
+                    <div class="flex items-center justify-end space-x-3">
+                        <x-button flat label="Cancel" x-on:click="close" />
+                        <x-button type="submit" primary label="Confirm Banking" icon="check-circle" />
+                    </div>
+                </x-slot>
             </form>
-        </div>
-    </div>
-    @endif
+        </x-card>
+    </x-modal>
 
     <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
-            
             Livewire.on('scroll-to-form', function() {
                 const form = document.getElementById('collection-form');
                 if (form) {

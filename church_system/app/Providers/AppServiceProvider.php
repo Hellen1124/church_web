@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
+
 use App\Models\Event; // Assuming your model is here
 // Make sure to remove any use statements for EventPolicy if it doesn't exist
 
