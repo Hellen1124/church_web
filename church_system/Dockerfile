@@ -1,110 +1,56 @@
-# This is your Dockerfile for Render
-# File location: C:\xampp\htdocs\church_web\church_system\Dockerfile
-
-# Multi-stage build for smaller image
-
-# Multi-stage build for smaller image
+# --- Stage 1: Builder ---
 FROM php:8.2-fpm-alpine AS builder
 
-# Install build dependencies (Added more libraries to ensure extensions build correctly)
-RUN apk add --no-cache \
-    git \
-    curl \
-    zip \
-    unzip \
-    postgresql-dev \
-    libpng-dev \
-    libzip-dev \
-    oniguruma-dev \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    icu-dev
+# Install the PHP Extension Installer
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN chmod +x /usr/local/bin/install-php-extensions
 
-# Install PHP extensions
-# We added 'intl' and 'gd' configuration for better Laravel support
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-    pdo \
-    pdo_pgsql \
-    mbstring \
-    exif \
-    pcntl \
-    gd \
-    zip \
-    intl
-
-
+# Install PHP extensions required for Laravel & Postgres
+RUN install-php-extensions pdo pdo_pgsql mbstring exif pcntl gd zip intl bcmath
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application
 WORKDIR /var/www/html
 COPY . .
 
-# Install dependencies (production only)
+# Install dependencies
 RUN composer install --optimize-autoloader --no-dev --no-interaction
 
-# Final stage
+# --- Stage 2: Final Runtime ---
 FROM php:8.2-fpm-alpine
 
-# Install runtime dependencies
-RUN apk add --no-cache \
-    nginx \
-    supervisor \
-    postgresql-dev \
-    libpng \
-    libzip \
-    shadow
+# Install the PHP Extension Installer again for the runtime stage
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN chmod +x /usr/local/bin/install-php-extensions
 
-# Install PHP extensions
-RUN docker-php-ext-install \
-    pdo \
-    pdo_pgsql \
-    mbstring \
-    exif \
-    pcntl \
-    gd \
-    zip
+# Install Runtime Dependencies (Nginx, Supervisor, and PHP extensions)
+RUN apk add --no-cache nginx supervisor shadow curl \
+    && install-php-extensions pdo pdo_pgsql mbstring exif pcntl gd zip intl bcmath
 
-# Copy built application from builder stage
+# Copy application from builder
 COPY --from=builder /var/www/html /var/www/html
 
-# Set permissions
+# Setup permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Create www-data user if it doesn't exist and set UID to 1000
-RUN if ! getent passwd www-data > /dev/null 2>&1; then \
-      adduser -u 1000 -D -S -G www-data www-data; \
-    fi
-
-# Copy nginx configuration
+# Configure Nginx & Supervisor
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
-
-# Create and configure supervisor
 RUN mkdir -p /etc/supervisor/conf.d
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Create start script
 COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
 
-# Switch to non-root user
-USER www-data
+# Fix for storage directories
+RUN mkdir -p /var/www/html/storage/framework/sessions \
+    /var/www/html/storage/framework/views \
+    /var/www/html/storage/framework/cache \
+    && chown -R www-data:www-data /var/www/html/storage
 
-# Create necessary directories
-RUN mkdir -p storage/framework/{sessions,views,cache}
-
-# Switch back to root for service management
-USER root
-
-# Expose port 8080 (Render free tier requirement)
 EXPOSE 8080
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:8080 || exit 1
+    CMD curl -f http://localhost:8080 || exit 1
 
-# Start the application
 CMD ["/start.sh"]
