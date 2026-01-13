@@ -48,6 +48,9 @@ RUN mkdir -p /var/www/html/storage/framework/sessions \
     /var/www/html/storage/framework/cache \
     && chown -R www-data:www-data /var/www/html/storage
 
+# Create the supervisor log directory
+RUN mkdir -p /var/log/supervisor && chown -R www-data:www-data /var/log/supervisor
+
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
