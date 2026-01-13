@@ -6,5 +6,4 @@
 /storage/*.key
 .phpunit.result.cache
 Docker-compose.yml
-Dockerfile
 .dockerignore
