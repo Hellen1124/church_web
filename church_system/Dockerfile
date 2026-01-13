@@ -3,6 +3,7 @@
 
 # Multi-stage build for smaller image
 
+# Multi-stage build for smaller image
 FROM php:8.2-fpm-alpine AS builder
 
 # Install build dependencies (Added more libraries to ensure extensions build correctly)
