@@ -33,6 +33,13 @@ Route::get('/.well-known/{any}', fn () =>
     response()->noContent()
 )->where('any', '.*');
 
+Route::get('/health', function() {
+    return response()->json([
+        'status' => 'healthy',
+        'timestamp' => now(),
+        'service' => 'Laravel on Render',
+    ]);
+});
 /*
 |--------------------------------------------------------------------------
 | Public Routes
