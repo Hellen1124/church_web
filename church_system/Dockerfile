@@ -12,7 +12,12 @@ RUN install-php-extensions pdo pdo_pgsql mbstring exif pcntl gd zip intl bcmath
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
+
+# ⭐⭐⭐ FIXED: COPY ONLY ONCE ⭐⭐⭐
 COPY . .
+
+# ⭐⭐⭐ CRITICAL: Remove .env files ⭐⭐⭐
+RUN rm -f .env .env.example || true
 
 # Install dependencies
 RUN composer install --optimize-autoloader --no-dev --no-interaction
@@ -31,12 +36,14 @@ RUN apk add --no-cache nginx supervisor shadow curl \
 # Copy application from builder
 COPY --from=builder /var/www/html /var/www/html
 
+# ⭐⭐⭐ DOUBLE CHECK: No .env files in final image ⭐⭐⭐
+RUN rm -f /var/www/html/.env /var/www/html/.env.example 2>/dev/null || true
+
 # Setup permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Configure Nginx & Supervisor
-
 COPY nginx/default.conf /etc/nginx/http.d/default.conf
 RUN mkdir -p /etc/supervisor/conf.d
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf

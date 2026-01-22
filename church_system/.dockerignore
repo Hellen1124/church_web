@@ -1,9 +1,46 @@
-.git
+# Laravel specific ignores
 .env
+.env.*
+!.env.example
 /vendor
 /node_modules
+/public/hot
 /public/storage
 /storage/*.key
+/storage/framework/cache/data/
+/storage/framework/sessions/
+/storage/framework/views/
+/nginx
+/docker
 .phpunit.result.cache
-Docker-compose.yml
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+.editorconfig
+.idea
+.git
+.gitattributes
+.gitignore
+.gitlab-ci.yml
+.styleci.yml
+.php-cs-fixer.cache
+
+# Docker files (but keep Dockerfile!)
+docker-compose.yml
+docker-compose.*.yml
 .dockerignore
+
+# Development files
+composer.phar
+package-lock.json
+yarn.lock
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
