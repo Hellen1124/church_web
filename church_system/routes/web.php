@@ -40,6 +40,55 @@ Route::get('/health', function() {
         'service' => 'Laravel on Render',
     ]);
 });
+
+Route::get('/test-db', function() {
+    try {
+        // Test raw PostgreSQL connection
+        $host = env('DB_HOST');
+        $port = env('DB_PORT', 5432);
+        $dbname = env('DB_DATABASE');
+        $user = env('DB_USERNAME');
+        
+        echo "<h2>Testing PostgreSQL Connection</h2>";
+        echo "Host: $host<br>";
+        echo "Port: $port<br>";
+        echo "Database: $dbname<br>";
+        echo "Username: $user<br>";
+        
+        // Try to connect
+        $connection = "host=$host port=$port dbname=$dbname user=$user";
+        
+        if (!empty(env('DB_PASSWORD'))) {
+            $connection .= " password=" . env('DB_PASSWORD');
+        }
+        
+        $conn = pg_connect($connection);
+        
+        if ($conn) {
+            echo "<h3 style='color: green;'>✅ SUCCESS: Connected to PostgreSQL!</h3>";
+            
+            // Show some info
+            $result = pg_query($conn, "SELECT version();");
+            $version = pg_fetch_result($result, 0);
+            echo "PostgreSQL Version: $version<br>";
+            
+            // List tables
+            $result = pg_query($conn, "SELECT tablename FROM pg_tables WHERE schemaname = 'public';");
+            echo "Tables in database: ";
+            while ($row = pg_fetch_row($result)) {
+                echo $row[0] . ", ";
+            }
+            
+            pg_close($conn);
+        } else {
+            echo "<h3 style='color: red;'>❌ FAILED: Could not connect</h3>";
+            echo "Error: " . pg_last_error();
+        }
+        
+    } catch (\Exception $e) {
+        echo "<h3 style='color: red;'>❌ ERROR: " . $e->getMessage() . "</h3>";
+    }
+});
 /*
 |--------------------------------------------------------------------------
 | Public Routes
