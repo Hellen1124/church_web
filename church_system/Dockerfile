@@ -1,42 +1,27 @@
-FROM php:8.2-fpm-alpine
+# Use a working Laravel PHP image
+FROM webdevops/php-nginx:8.2-alpine
 
-# Install system dependencies
-RUN apk add --no-cache curl git postgresql-dev nginx supervisor \
-    libpng-dev libzip-dev icu-dev oniguruma-dev freetype-dev libjpeg-turbo-dev
+# Install PostgreSQL support
+RUN apk add --no-cache postgresql-dev \
+    && docker-php-ext-install pdo pdo_pgsql
 
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install pdo pdo_pgsql bcmath gd zip intl mbstring
-
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
+# Set working directory
 WORKDIR /var/www/html
 
-# Copy only composer files first
-COPY composer.json composer.lock ./
-
-# Install dependencies
-RUN composer install --optimize-autoloader --no-dev --no-interaction
-
-# Copy the rest
+# Copy application
 COPY . .
 
 # Remove .env files
 RUN rm -f .env .env.example || true
 
-# ⭐⭐⭐ FIXED: Alpine Linux permissions ⭐⭐⭐
-# Create user and group if they don't exist
-RUN addgroup -g 1000 www-data || true && \
-    adduser -u 1000 -G www-data -S www-data || true
+# Install dependencies (skip scripts that might fail)
+RUN composer install --optimize-autoloader --no-dev --no-interaction --no-scripts
 
-# Set permissions (ignore errors if user doesn't exist)
-RUN chmod -R 775 storage bootstrap/cache && \
-    chown -R 1000:1000 storage bootstrap/cache || true
+# Fix permissions
+RUN chmod -R 775 storage bootstrap/cache
 
-# Copy configuration files
-COPY nginx/default.conf /etc/nginx/http.d/default.conf
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Copy your configurations
+COPY nginx/default.conf /opt/docker/etc/nginx/vhost.conf
 COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
 
