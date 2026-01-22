@@ -1,5 +1,15 @@
-# --- Stage 1: Builder ---
-FROM php:8.2-fpm-alpine AS builder
+FROM php:8.2-fpm-alpine
+
+# Install system dependencies
+RUN apk add --no-cache curl git postgresql-dev nginx supervisor \
+    libpng-dev libzip-dev icu-dev oniguruma-dev freetype-dev libjpeg-turbo-dev
+
+# Install PHP extensions (all that Laravel needs)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install pdo pdo_pgsql bcmath mbstring exif pcntl gd zip intl
+
+# Enable PHP extensions
+RUN docker-php-ext-enable opcache
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -12,30 +22,14 @@ COPY . .
 # Remove .env files
 RUN rm -f .env .env.example || true
 
-# Install PHP extensions
-RUN apk add --no-cache postgresql-dev \
-    && docker-php-ext-install pdo pdo_pgsql bcmath
-
 # Install dependencies
 RUN composer install --optimize-autoloader --no-dev --no-interaction
 
-# --- Stage 2: Final Runtime ---
-FROM php:8.2-fpm-alpine
-
-# Install runtime dependencies
-RUN apk add --no-cache nginx supervisor curl postgresql-client \
-    && apk add --no-cache postgresql-dev \
-    && docker-php-ext-install pdo pdo_pgsql bcmath
-
-# Configure PHP-FPM
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
-# Copy application from builder
-COPY --from=builder /var/www/html /var/www/html
-
 # Setup permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN addgroup -g 1000 -S www-data && \
+    adduser -u 1000 -S www-data -G www-data && \
+    chown -R www-data:www-data /var/www/html && \
+    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Copy configuration files
 COPY nginx/default.conf /etc/nginx/http.d/default.conf
