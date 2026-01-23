@@ -7,15 +7,12 @@ echo "🚀 FINAL ATTEMPT: Clearing everything and rebuilding..."
 mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache
 chmod -R 775 storage bootstrap/cache
 
-# 2. FORCE DOCTRINE/DBAL (Needed for modifying columns in Postgres)
-# If your migration #25 uses ->change(), you need this.
-composer require doctrine/dbal --no-interaction --no-scripts
-
-# 3. REBUILD DATABASE
+# 2. REBUILD DATABASE
+# migrate:fresh will use our new file order to build everything perfectly
 echo "📦 Running migrate:fresh..."
 php artisan migrate:fresh --force --no-interaction
 
-# 4. OPTIMIZE
+# 3. OPTIMIZE
 echo "⚡ Optimizing..."
 php artisan config:cache
 php artisan route:cache
