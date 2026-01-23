@@ -1,23 +1,25 @@
 #!/bin/sh
-# Exit on any error
 set -e
 
-echo "🚀 Starting Final Deployment Steps..."
+echo "🚀 FINAL ATTEMPT: Clearing everything and rebuilding..."
 
-# 1. Create folders & set permissions
+# 1. Folders & Permissions
 mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache
 chmod -R 775 storage bootstrap/cache
 
-# 2. RUN MIGRATIONS FIRST
-# This is the most important part. We must build the tables before touching them.
-echo "📦 Running database migrations..."
-php artisan migrate --force --no-interaction
+# 2. FORCE DOCTRINE/DBAL (Needed for modifying columns in Postgres)
+# If your migration #25 uses ->change(), you need this.
+composer require doctrine/dbal --no-interaction --no-scripts
 
-# 3. OPTIMIZE (We skip manual cache:clear because config:cache does it better)
-echo "⚡ Optimizing for production..."
+# 3. REBUILD DATABASE
+echo "📦 Running migrate:fresh..."
+php artisan migrate:fresh --force --no-interaction
+
+# 4. OPTIMIZE
+echo "⚡ Optimizing..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-echo "🚀 App is ready! Starting server..."
+echo "🎬 SUCCESS! Starting server..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
