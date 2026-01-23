@@ -17,8 +17,17 @@ RUN rm -f .env .env.example || true
 # Install dependencies (skip scripts that might fail)
 RUN composer install --optimize-autoloader --no-dev --no-interaction --no-scripts
 
+# --- FIX START ---
+# Ensure storage and cache directories exist before changing permissions
+RUN mkdir -p storage/framework/sessions \
+             storage/framework/views \
+             storage/framework/cache \
+             bootstrap/cache
+
 # Fix permissions
 RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R application:application storage bootstrap/cache
+# --- FIX END ---
 
 # Copy your configurations
 COPY nginx/default.conf /opt/docker/etc/nginx/vhost.conf
