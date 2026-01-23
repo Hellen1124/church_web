@@ -1,33 +1,23 @@
 #!/bin/sh
-
 # Exit on any error
 set -e
 
-echo "🚀 Setting up Laravel application on Render..."
+echo "🚀 Starting Final Deployment Steps..."
 
-# 1. ENSURE PERMISSIONS EXIST FIRST
+# 1. Create folders & set permissions
 mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache
 chmod -R 775 storage bootstrap/cache
 
-# 2. RUN MIGRATIONS
+# 2. RUN MIGRATIONS FIRST
+# This is the most important part. We must build the tables before touching them.
 echo "📦 Running database migrations..."
-# The --force is required for production
 php artisan migrate --force --no-interaction
 
-# 3. CLEAR CACHE BEFORE DOING ANYTHING
-# We use --force and explicitly tell it to use the pgsql connection 
-# to prevent it from looking for a sqlite file.
-php artisan config:clear
-php artisan cache:clear
-
-
-
-# 4. OPTIMIZE FOR PRODUCTION
-echo "⚡ Optimizing configuration..."
+# 3. OPTIMIZE (We skip manual cache:clear because config:cache does it better)
+echo "⚡ Optimizing for production..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-echo "🎬 Starting Web Server..."
-# Using the standard command for this specific image
+echo "🚀 App is ready! Starting server..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
